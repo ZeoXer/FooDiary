@@ -1,8 +1,8 @@
-# 專案題目 —— Food Record
+# 專案題目 —— FooDairy
 
 ### 畫面
 
--   wareframe:
+-   wareframe: https://www.figma.com/design/vIvMeIQgeQnQclY4yhb2di/%E8%A8%BB%E5%86%8A%E9%A0%81%E9%9D%A2?node-id=0-1&t=sZP7aIkIjaKrFV4y-1
 
 ### 核心功能
 
