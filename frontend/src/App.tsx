@@ -1,10 +1,10 @@
 import { Route, Routes } from "react-router-dom";
 
 import IndexPage from "@/pages/index";
-import AboutPage from "@/pages/about";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
+import InfoFormPage from "@/pages/info-form";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
       <Route element={<LoginPage />} path="/login" />
       <Route element={<SignupPage />} path="/signup" />
       <Route element={<DashboardPage />} path="/dashboard" />
-      <Route element={<AboutPage />} path="/about" />
+      <Route element={<InfoFormPage />} path="/info-form" />
     </Routes>
   );
 }

@@ -47,10 +47,16 @@ export default function LoginPage() {
           />
           <Button size="lg">登入</Button>
           <div className="grid grid-cols-2 gap-4">
-            <Button size="lg" startContent={<GoogleLogo className="w-6" />}>
+            <Button
+              size="lg"
+              startContent={<GoogleLogo className="w-6 shrink-0" />}
+            >
               Google 登入
             </Button>
-            <Button size="lg" startContent={<FacebookLogo className="w-6" />}>
+            <Button
+              size="lg"
+              startContent={<FacebookLogo className="w-6 shrink-0" />}
+            >
               Facebook 登入
             </Button>
           </div>
