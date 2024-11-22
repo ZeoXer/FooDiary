@@ -25,6 +25,7 @@ export default function SignupPage() {
           <h1 className={title()}>成為新用戶</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
+          <Input label="Name" size="lg" />
           <Input label="Email" size="lg" type="email" />
           <Input
             endContent={
