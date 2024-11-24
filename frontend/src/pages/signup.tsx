@@ -54,6 +54,14 @@ export default function SignupPage() {
               Facebook 註冊
             </Button>
           </div>
+          <div className="mt-4 text-center">
+            <span className="text-sm">
+              Already have an account?{" "}
+              <a href="/signup" className="text-blue-500 hover:underline">
+                Log in here.
+              </a>
+            </span>
+          </div>
         </div>
       </section>
     </DefaultLayout>

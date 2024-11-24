@@ -24,6 +24,10 @@ export const siteConfig = {
       label: "Info Form",
       href: "/info-form",
     },
+    {
+      label: "Profile",
+      href: "/profile",
+    },
   ],
   navMenuItems: [
     {
@@ -45,6 +49,10 @@ export const siteConfig = {
     {
       label: "Info Form",
       href: "/info-form",
+    },
+    {
+      label: "Profile",
+      href: "/profile",
     },
   ],
   links: {
