@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Chart, ChartEvent } from "chart.js/auto";
 import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import { Divider } from "@nextui-org/divider";
+
 import DefaultLayout from "@/layouts/default";
 
 export default function DashboardPage() {
@@ -106,7 +107,7 @@ export default function DashboardPage() {
       }
     })();
   }, []);
-  
+
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
@@ -114,8 +115,8 @@ export default function DashboardPage() {
         <div className="w-full max-w-lg p-4 bg-gray-100 rounded-lg shadow">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
               className="text-blue-500 hover:underline"
+              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
             >
               {"< Previous Week"}
             </button>
@@ -123,12 +124,12 @@ export default function DashboardPage() {
               2024 Oct. {7 + currentWeek * 7}-13
             </h2>
             <button
+              className="text-blue-500 hover:underline"
               onClick={() =>
                 setCurrentWeek((prev) =>
                   Math.min(prev + 1, weeklyCalories.length - 1)
                 )
               }
-              className="text-blue-500 hover:underline"
             >
               {"Next Week >"}
             </button>
@@ -137,6 +138,7 @@ export default function DashboardPage() {
             <div className="absolute inset-0 flex items-end gap-2 justify-center">
               {calorieData.map(({ day, totalCalories }, index) => {
                 const heightPercentage = (totalCalories / maxCalories) * 100;
+
                 console.log(
                   "Day:",
                   day,
@@ -145,6 +147,7 @@ export default function DashboardPage() {
                   "Height:",
                   heightPercentage
                 );
+
                 return (
                   <div
                     key={index}
@@ -157,12 +160,12 @@ export default function DashboardPage() {
                         height: `${heightPercentage}%`, // Dynamic height
                         transition: "height 0.3s ease",
                       }}
-                    ></div>
+                    />
                     <button
-                      onClick={() => setSelectedDay(day)}
                       className={`text-xs mt-1 ${
                         selectedDay === day ? "font-bold text-blue-500" : ""
                       }`}
+                      onClick={() => setSelectedDay(day)}
                     >
                       {day}
                     </button>
@@ -213,7 +216,8 @@ export default function DashboardPage() {
               Add
             </button>
           </div>
-          
+        </div>
+
         <div className="w-full max-w-lg justify-center">
           <canvas className="mb-12" id="calories" />
           <Card>
