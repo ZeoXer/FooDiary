@@ -26,25 +26,32 @@ export default function LoginPage() {
         </div>
         <div className="grid gap-4 max-w-lg w-full">
           <Input label="Email" size="lg" type="email" />
-          <Input
-            endContent={
-              <button
-                aria-label="toggle password visibility"
-                className="focus:outline-none"
-                type="button"
-                onClick={toggleVisibility}
-              >
-                {isVisible ? (
-                  <EyeSlashFilledIcon className="w-7 fill-white text-2xl pointer-events-none" />
-                ) : (
-                  <EyeFilledIcon className="w-7 fill-white text-2xl pointer-events-none" />
-                )}
-              </button>
-            }
-            label="Password"
-            size="lg"
-            type={isVisible ? "text" : "password"}
-          />
+          <div>
+            <Input
+              endContent={
+                <button
+                  aria-label="toggle password visibility"
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={toggleVisibility}
+                >
+                  {isVisible ? (
+                    <EyeSlashFilledIcon className="w-7 fill-white text-2xl pointer-events-none" />
+                  ) : (
+                    <EyeFilledIcon className="w-7 fill-white text-2xl pointer-events-none" />
+                  )}
+                </button>
+              }
+              label="Password"
+              size="lg"
+              type={isVisible ? "text" : "password"}
+            />
+            <div className="mt-2 text-right">
+              <a href="#" className="text-sm text-blue-500 hover:underline">
+                Forget Password?
+              </a>
+            </div>
+          </div>
           <Button size="lg">登入</Button>
           <div className="grid grid-cols-2 gap-4">
             <Button
@@ -59,6 +66,15 @@ export default function LoginPage() {
             >
               Facebook 登入
             </Button>
+          </div>
+          {/* 新增註冊文字 */}
+          <div className="mt-4 text-center">
+            <span className="text-sm">
+              Don't have an account?{" "}
+              <a href="/signup" className="text-blue-500 hover:underline">
+                Register here.
+              </a>
+            </span>
           </div>
         </div>
       </section>
