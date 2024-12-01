@@ -9,6 +9,7 @@ var signupRouter = require('./src/routes/signup');
 var logjnRouter = require('./src/routes/login');
 var updatePasswordRouter = require('./src/routes/password')
 var createUserRouter = require('./src/routes/createUser')
+var healthyRoutes = require('./src/routes/healthy');
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use('/healthy', healthyRoutes);
 app.use('/api/auth/signup', signupRouter)
 app.use('/api/auth/login', logjnRouter)
 app.use('/api/user/updatePassword', updatePasswordRouter);
