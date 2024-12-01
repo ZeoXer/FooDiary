@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
-import { Chart } from "chart.js/auto";
+import { Chart, ChartEvent } from "chart.js/auto";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+
 import DefaultLayout from "@/layouts/default";
 
 export default function DashboardPage() {
-  const [selectedDay, setSelectedDay] = useState("Sun.");
-  const [currentWeek, setCurrentWeek] = useState(0);
+  const [selectedDay, setSelectedDay] = useState("Sun."); // Default selected day
+  const [currentWeek, setCurrentWeek] = useState(0); // Default week index
 
+  // Weekly calorie data
   const weeklyCalories = [
     [
       { day: "Sun.", totalCalories: 1500 },
@@ -25,6 +29,20 @@ export default function DashboardPage() {
       { day: "Fri.", totalCalories: 2600 },
       { day: "Sat.", totalCalories: 2200 },
     ],
+  ];
+
+  const calorieData = weeklyCalories[currentWeek]; // Get data for the current week
+  const maxCalories = 2500; // Maximum calorie value (for scaling the chart)
+  const BMR = 2000; // Basal Metabolic Rate (BMR)
+
+  const data = [
+    { weekDay: "Mon", count: 1000 },
+    { weekDay: "Tue", count: 800 },
+    { weekDay: "Wed", count: 2310 },
+    { weekDay: "Thu", count: 1583 },
+    { weekDay: "Fri", count: 2233 },
+    { weekDay: "Sat", count: 1832 },
+    { weekDay: "Sun", count: 1693 },
   ];
 
   const calorieData = weeklyCalories[currentWeek];

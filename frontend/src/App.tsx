@@ -7,8 +7,8 @@ import SignupPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
 import InfoFormPage from "@/pages/info-form";
 import ProfilePage from "@/pages/profile";
-import ChatboxPage from "./pages/chatbox";
-import FoodRecordPage from "./pages/FoodRecord";
+import ChatboxPage from "@/pages/chatbox";
+import FoodRecordPage from "@/pages/FoodRecord";
 
 function App() {
   return (
