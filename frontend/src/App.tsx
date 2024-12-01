@@ -7,6 +7,8 @@ import SignupPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
 import InfoFormPage from "@/pages/info-form";
 import ProfilePage from "@/pages/profile";
+import ChatboxPage from "@/pages/chatbox";
+import FoodRecordPage from "@/pages/FoodRecord";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
       <Route element={<DashboardPage />} path="/dashboard" />
       <Route element={<InfoFormPage />} path="/info-form" />
       <Route element={<ProfilePage />} path="/profile" />
+      <Route element={<ChatboxPage />} path="/chatbox" />
+      <Route element={<FoodRecordPage />} path="/FoodRecord" />
     </Routes>
   );
 }

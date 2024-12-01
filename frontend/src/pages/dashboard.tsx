@@ -45,34 +45,17 @@ export default function DashboardPage() {
     { weekDay: "Sun", count: 1693 },
   ];
 
-  const chartOption = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    onClick: (event: ChartEvent & Event) => {
-      const activeElements = Chart.getChart(
-        "calories"
-      )?.getElementsAtEventForMode(
-        event,
-        "nearest",
-        { intersect: true },
-        false
-      );
+  const calorieData = weeklyCalories[currentWeek];
+  const BMR = 2000;
 
-      if (activeElements && activeElements.length > 0) {
-        const clickedIndex = activeElements[0].index;
-        const clickedData = data[clickedIndex];
-
-        handleBarClick(clickedData);
-      }
-    },
-  };
+  const meals = [
+    { meal: "Breakfast", calories: 350 },
+    { meal: "Lunch", calories: 850 },
+    { meal: "Dinner", calories: 750 },
+  ];
 
   const handleBarClick = (data: any) => {
-    alert(data.weekDay);
+    setSelectedDay(data.weekDay);
   };
 
   useEffect(() => {
@@ -80,111 +63,127 @@ export default function DashboardPage() {
       Chart.getChart("calories")?.destroy();
     }
 
-    (async function () {
-      const ctx = document.getElementById(
-        "calories"
-      ) as HTMLCanvasElement | null;
+    const ctx = document.getElementById("calories") as HTMLCanvasElement | null;
 
-      if (ctx) {
-        new Chart(ctx, {
-          data: {
-            labels: data.map((row) => row.weekDay),
-            datasets: [
-              {
-                type: "bar",
-                label: "卡路里攝取量",
-                data: data.map((row) => row.count),
-              },
-              {
-                type: "line",
-                label: "BMR",
-                data: data.map((_) => 1504),
-              },
-            ],
+    if (ctx) {
+      const maxCalories = Math.max(
+        ...calorieData.map((row) => row.totalCalories)
+      );
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: calorieData.map((row) => row.day),
+          datasets: [
+            {
+              type: "bar",
+              label: "Total Calories",
+              data: calorieData.map((row) => row.totalCalories),
+              backgroundColor: "rgba(54, 162, 235, 0.6)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 1,
+            },
+            {
+              type: "line",
+              label: "BMR",
+              data: calorieData.map(() => BMR),
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+            },
           },
-          options: chartOption,
-        });
-      }
-    })();
-  }, []);
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: maxCalories + 200,
+            },
+          },
+          onClick: (event, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              setSelectedDay(calorieData[index].day);
+            }
+          },
+        },
+      });
+    }
+  }, [currentWeek]);
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        {/* Week navigation and chart */}
+        {/* 周切換 */}
         <div className="w-full max-w-lg p-4 bg-gray-100 rounded-lg shadow">
           <div className="flex items-center justify-between">
+            {/* Previous Week */}
             <button
-              className="text-blue-500 hover:underline"
               onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              aria-label="Previous Week"
             >
-              {"< Previous Week"}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-6 h-6 text-blue-500"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 19.5L8.25 12l7.5-7.5"
+                />
+              </svg>
             </button>
+
             <h2 className="text-lg font-semibold">
-              2024 Oct. {7 + currentWeek * 7}-13
+              Week of {7 + currentWeek * 7}-{13 + currentWeek * 7}
             </h2>
+
+            {/* Next Week */}
             <button
-              className="text-blue-500 hover:underline"
               onClick={() =>
                 setCurrentWeek((prev) =>
                   Math.min(prev + 1, weeklyCalories.length - 1)
                 )
               }
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              aria-label="Next Week"
             >
-              {"Next Week >"}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-6 h-6 text-blue-500"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                />
+              </svg>
             </button>
-          </div>
-          <div className="relative w-full h-40 bg-gray-200 rounded mt-4">
-            <div className="absolute inset-0 flex items-end gap-2 justify-center">
-              {calorieData.map(({ day, totalCalories }, index) => {
-                const heightPercentage = (totalCalories / maxCalories) * 100;
-
-                console.log(
-                  "Day:",
-                  day,
-                  "Calories:",
-                  totalCalories,
-                  "Height:",
-                  heightPercentage
-                );
-
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center"
-                    style={{ width: "40px" }}
-                  >
-                    <div
-                      className="bg-blue-400 w-full rounded border border-black"
-                      style={{
-                        height: `${heightPercentage}%`, // Dynamic height
-                        transition: "height 0.3s ease",
-                      }}
-                    />
-                    <button
-                      className={`text-xs mt-1 ${
-                        selectedDay === day ? "font-bold text-blue-500" : ""
-                      }`}
-                      onClick={() => setSelectedDay(day)}
-                    >
-                      {day}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              className="absolute left-0 right-0 border-t-2 border-red-500"
-              style={{ top: `${(BMR / maxCalories) * 100}%` }}
-            >
-              <span className="absolute -top-4 left-2 text-xs font-medium text-red-500">
-                BMR
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Detailed calorie information */}
+        {/* 圖表 */}
+        <div className="w-full max-w-lg">
+          <canvas id="calories" />
+        </div>
+
+        {/* 詳細熱量信息 */}
         <div className="w-full max-w-lg p-4 bg-gray-200 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-2">{selectedDay}</h3>
           <div className="flex justify-between items-center mb-4">
@@ -195,12 +194,7 @@ export default function DashboardPage() {
             </span>
           </div>
           <hr className="border-gray-400 mb-4" />
-          {/* Meals */}
-          {[
-            { meal: "Breakfast", calories: 350 },
-            { meal: "Lunch", calories: 850 },
-            { meal: "Dinner", calories: 750 },
-          ].map((item, index) => (
+          {meals.map((item, index) => (
             <div key={index} className="flex justify-between items-center mb-3">
               <span className="text-sm font-medium">{item.meal}</span>
               <div className="flex items-center gap-2">
@@ -216,17 +210,6 @@ export default function DashboardPage() {
               Add
             </button>
           </div>
-        </div>
-
-        <div className="w-full max-w-lg justify-center">
-          <canvas className="mb-12" id="calories" />
-          <Card>
-            <CardHeader className="flex gap-3">
-              <div className="flex">本日總卡路里</div>
-            </CardHeader>
-            <Divider />
-            <CardBody>test</CardBody>
-          </Card>
         </div>
       </section>
     </DefaultLayout>
