@@ -2,11 +2,20 @@
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 
-// Joi 驗證
+// Joi 驗證模型
 const updatePasswordModel = Joi.object({
-    email: Joi.string().email().required(),
-    oldPassword: Joi.string().min(8).required(),
-    newPassword: Joi.string().min(8).required()
+    email: Joi.string().email().required().messages({
+        'string.email': '請輸入有效的 Email',
+        'any.required': 'Email 為必填欄位'
+    }),
+    oldPassword: Joi.string().min(8).required().messages({
+        'string.min': '舊密碼長度不得少於 8 個字符',
+        'any.required': '舊密碼為必填欄位'
+    }),
+    newPassword: Joi.string().min(8).required().messages({
+        'string.min': '新密碼長度不得少於 8 個字符',
+        'any.required': '新密碼為必填欄位'
+    })
 });
 
 // 更新密碼

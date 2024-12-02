@@ -1,11 +1,7 @@
 ﻿const { User } = require('../../models/user');
-const jwt = require('jsonwebtoken'); 
 const bcrypt = require('bcrypt');
+const { generateToken } = require("../../config/jwt")
 
-
-// JWT 秘鑰和選項
-const JWT_SECRET = process.env.JWT_SECRET
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN
 
 // 登入
 const login = async (req, res) => {
@@ -31,11 +27,7 @@ const login = async (req, res) => {
         }
 
         // 生成 JWT token
-        const token = jwt.sign(
-            { id: user._id, email: user.email }, // payload
-            JWT_SECRET, // secret key
-            { expiresIn: JWT_EXPIRES_IN } // options
-        );
+        const token = generateToken(user)
 
         // 回傳用戶資訊和 token
         res.status(200).json({message: '登入成功',token});

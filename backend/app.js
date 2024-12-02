@@ -3,20 +3,23 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var { verifyToken } = require('./src/middlewares/verifyToken');
 var connectDB = require('./src/config/db');
+// var initializeDatabase = require('./src/database/initializeDatabase');
 
-var signupRouter = require('./src/routes/signup');
-var logjnRouter = require('./src/routes/login');
-var updatePasswordRouter = require('./src/routes/password')
-var createUserRouter = require('./src/routes/createUser')
-var healthyRoutes = require('./src/routes/healthy');
+var authRouter = require('./src/routes/auth');    // 註冊 & 登入
+var userRouter = require('./src/routes/user');    // 用戶管理 
+var recordRouter = require('./src/routes/record'); // 記錄管理 
+var healthyRouter = require('./src/routes/healthy'); 
 
 var app = express();
 
 connectDB();
 
+// initializeDatabase()
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'src/views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
@@ -25,12 +28,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-app.use('/healthy', healthyRoutes);
-app.use('/api/auth/signup', signupRouter)
-app.use('/api/auth/login', logjnRouter)
-app.use('/api/user/updatePassword', updatePasswordRouter);
-app.use('/api/user/createUser', createUserRouter);
+app.use('/uploads', express.static('uploads'));
+app.use('/api/auth', authRouter);    
+app.use('/api/user', verifyToken, userRouter);    
+app.use('/api/record', verifyToken, recordRouter); 
+app.use('/api/healthy', healthyRouter); 
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
