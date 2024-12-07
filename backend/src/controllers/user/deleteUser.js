@@ -1,7 +1,7 @@
 ﻿const { User } = require('../../models/user'); 
 const { UserData } = require('../../models/userdata'); 
 const { Record } = require('../../models/record'); 
-const { ChatRecord } = require('../../models/chatrecord'); 
+const { ChatRecord } = require('../../models/chatRecord'); 
 
 // 刪除使用者
 const deleteUser = async (req, res) => {

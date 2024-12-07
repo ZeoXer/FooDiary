@@ -1,15 +1,18 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const http = require('http');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var WebSocket = require('ws');
 var { verifyToken } = require('./src/middlewares/verifyToken');
 var connectDB = require('./src/config/db');
 // var initializeDatabase = require('./src/database/initializeDatabase');
 
-var authRouter = require('./src/routes/auth');    // 註冊 & 登入
-var userRouter = require('./src/routes/user');    // 用戶管理 
-var recordRouter = require('./src/routes/record'); // 記錄管理 
+var authRouter = require('./src/routes/auth');    
+var userRouter = require('./src/routes/user');    
+var recordRouter = require('./src/routes/record'); 
+var chatRouter = require('./src/routes/chat'); 
 var healthyRouter = require('./src/routes/healthy'); 
 
 var app = express();
@@ -30,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRouter);    
+app.use('/api/chat', chatRouter);  
 app.use('/api/user', verifyToken, userRouter);    
 app.use('/api/record', verifyToken, recordRouter); 
 app.use('/api/healthy', healthyRouter); 

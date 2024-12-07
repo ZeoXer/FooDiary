@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-const loginController = require('../controllers/auth/loginCrotroller');
+const loginController = require('../controllers/auth/loginController');
 const signupController = require('../controllers/auth/signupController');
 
 // 一般登入

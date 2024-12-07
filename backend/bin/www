@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('foodiary-backend:server');
 var http = require('http');
+var WebSocket = require('ws');
+var chatController = require('../src/controllers/chat/chatWithBot');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +22,16 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * Create WebSocket server and bind it to the HTTP server.
+ */
+
+var wss = new WebSocket.Server({ server });
+
+// 處理 WebSocket 連接
+wss.on('connection', chatController.handleWebSocketConnection);
+
 
 /**
  * Listen on provided port, on all network interfaces.
