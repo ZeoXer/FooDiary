@@ -7,6 +7,7 @@ var logger = require('morgan');
 var WebSocket = require('ws');
 var { verifyToken } = require('./src/middlewares/verifyToken');
 var connectDB = require('./src/config/db');
+var { connectRedis } = require('./src/config/redis');
 // var initializeDatabase = require('./src/database/initializeDatabase');
 
 var authRouter = require('./src/routes/auth');    
@@ -18,6 +19,7 @@ var healthyRouter = require('./src/routes/healthy');
 var app = express();
 
 connectDB();
+connectRedis();
 
 // initializeDatabase()
 
