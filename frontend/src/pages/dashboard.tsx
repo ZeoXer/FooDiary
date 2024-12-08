@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
-import { Chart, ChartEvent } from "chart.js/auto";
-import { Card, CardHeader, CardBody } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
-
+import { Chart, ChartEvent, ActiveElement } from "chart.js/auto";
 import DefaultLayout from "@/layouts/default";
 
+type CalorieData = {
+  day: string;
+  totalCalories: number;
+};
+
+type MealData = {
+  meal: string;
+  calories: number;
+};
+
 export default function DashboardPage() {
-  const [selectedDay, setSelectedDay] = useState("Sun."); // Default selected day
-  const [currentWeek, setCurrentWeek] = useState(0); // Default week index
+  const [selectedDay, setSelectedDay] = useState("Sun.");
+  const [currentWeek, setCurrentWeek] = useState(0);
 
   // Weekly calorie data
-  const weeklyCalories = [
+  const weeklyCalories: CalorieData[][] = [
     [
       { day: "Sun.", totalCalories: 1500 },
       { day: "Mon.", totalCalories: 2200 },
@@ -31,32 +38,14 @@ export default function DashboardPage() {
     ],
   ];
 
-  const calorieData = weeklyCalories[currentWeek]; // Get data for the current week
-  const maxCalories = 2500; // Maximum calorie value (for scaling the chart)
-  const BMR = 2000; // Basal Metabolic Rate (BMR)
-
-  const data = [
-    { weekDay: "Mon", count: 1000 },
-    { weekDay: "Tue", count: 800 },
-    { weekDay: "Wed", count: 2310 },
-    { weekDay: "Thu", count: 1583 },
-    { weekDay: "Fri", count: 2233 },
-    { weekDay: "Sat", count: 1832 },
-    { weekDay: "Sun", count: 1693 },
-  ];
-
   const calorieData = weeklyCalories[currentWeek];
   const BMR = 2000;
 
-  const meals = [
+  const meals: MealData[] = [
     { meal: "Breakfast", calories: 350 },
     { meal: "Lunch", calories: 850 },
     { meal: "Dinner", calories: 750 },
   ];
-
-  const handleBarClick = (data: any) => {
-    setSelectedDay(data.weekDay);
-  };
 
   useEffect(() => {
     if (Chart.getChart("calories")) {
@@ -107,26 +96,33 @@ export default function DashboardPage() {
               max: maxCalories + 200,
             },
           },
-          onClick: (event, elements) => {
+          onClick: (_: ChartEvent, elements: ActiveElement[]) => {
             if (elements.length > 0) {
-              const index = elements[0].index;
+              const index = elements[0].index as number;
               setSelectedDay(calorieData[index].day);
             }
           },
         },
       });
     }
-  }, [currentWeek]);
+  }, [currentWeek, calorieData]);
+
+  const handlePreviousWeek = () => {
+    setCurrentWeek((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeek((prev) => Math.min(prev + 1, weeklyCalories.length - 1));
+  };
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        {/* 周切換 */}
+        {/* Week Navigation */}
         <div className="w-full max-w-lg p-4 bg-gray-100 rounded-lg shadow">
           <div className="flex items-center justify-between">
-            {/* Previous Week */}
             <button
-              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
+              onClick={handlePreviousWeek}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               aria-label="Previous Week"
             >
@@ -147,16 +143,11 @@ export default function DashboardPage() {
             </button>
 
             <h2 className="text-lg font-semibold">
-              Week of {7 + currentWeek * 7}-{13 + currentWeek * 7}
+              Week {currentWeek + 1} of {weeklyCalories.length}
             </h2>
 
-            {/* Next Week */}
             <button
-              onClick={() =>
-                setCurrentWeek((prev) =>
-                  Math.min(prev + 1, weeklyCalories.length - 1)
-                )
-              }
+              onClick={handleNextWeek}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               aria-label="Next Week"
             >
@@ -178,18 +169,18 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 圖表 */}
+        {/* Calorie Chart */}
         <div className="w-full max-w-lg">
-          <canvas id="calories" />
+          <canvas id="calories"></canvas>
         </div>
 
-        {/* 詳細熱量信息 */}
+        {/* Selected Day Details */}
         <div className="w-full max-w-lg p-4 bg-gray-200 rounded-lg shadow">
           <h3 className="text-lg font-semibold mb-2">{selectedDay}</h3>
           <div className="flex justify-between items-center mb-4">
             <span className="text-sm font-medium">Total Calories</span>
             <span className="text-lg font-bold">
-              {calorieData.find(({ day }) => day === selectedDay)
+              {calorieData.find((item) => item.day === selectedDay)
                 ?.totalCalories ?? 0}
             </span>
           </div>
