@@ -1,4 +1,4 @@
-﻿const { User　} = require('../../models/user');
+﻿const { User } = require('../../models/user');
 const apiService = require("../../services/RAGService");
 
 const chatHistoryController = {
