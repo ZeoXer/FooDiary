@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+<<<<<<< HEAD
 import { Link } from "@nextui-org/link";
+=======
+>>>>>>> main
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -26,8 +29,13 @@ export default function SignupPage() {
           <h1 className={title()}>成為新用戶</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
+<<<<<<< HEAD
           <Input label="使用者名稱" size="lg" />
           <Input label="信箱" size="lg" type="email" />
+=======
+          <Input label="Name" size="lg" />
+          <Input label="Email" size="lg" type="email" />
+>>>>>>> main
           <Input
             endContent={
               <button
@@ -43,7 +51,11 @@ export default function SignupPage() {
                 )}
               </button>
             }
+<<<<<<< HEAD
             label="密碼"
+=======
+            label="Password"
+>>>>>>> main
             size="lg"
             type={isVisible ? "text" : "password"}
           />
@@ -52,19 +64,31 @@ export default function SignupPage() {
             <Button size="lg" startContent={<GoogleLogo className="w-6" />}>
               Google 註冊
             </Button>
+<<<<<<< HEAD
             <Button
               size="lg"
               startContent={<FacebookLogo className="w-6 shrink-0" />}
             >
+=======
+            <Button size="lg" startContent={<FacebookLogo className="w-6" />}>
+>>>>>>> main
               Facebook 註冊
             </Button>
           </div>
           <div className="mt-4 text-center">
+<<<<<<< HEAD
             <span>
               已經有帳號了？前往
               <Link href="/login" underline="hover">
                 登入
               </Link>
+=======
+            <span className="text-sm">
+              Already have an account?{" "}
+              <a href="/signup" className="text-blue-500 hover:underline">
+                Log in here.
+              </a>
+>>>>>>> main
             </span>
           </div>
         </div>
