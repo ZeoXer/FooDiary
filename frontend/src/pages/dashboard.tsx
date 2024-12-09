@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Chart } from "chart.js/auto";
 import { Card, CardHeader, CardBody } from "@nextui-org/card";
-
-import DefaultLayout from "@/layouts/default";
 import { Divider } from "@nextui-org/divider";
 import { Button } from "@nextui-org/button";
+
+import DefaultLayout from "@/layouts/default";
 import { HorizontalDotsIcon } from "@/components/icons";
 
 export default function DashboardPage() {
