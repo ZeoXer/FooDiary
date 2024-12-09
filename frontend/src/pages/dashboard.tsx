@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Chart, ChartEvent } from "chart.js/auto";
+import { Chart } from "chart.js/auto";
 import { Card, CardHeader, CardBody } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
 
 import DefaultLayout from "@/layouts/default";
+import { Divider } from "@nextui-org/divider";
+import { Button } from "@nextui-org/button";
+import { HorizontalDotsIcon } from "@/components/icons";
 
 export default function DashboardPage() {
   const [selectedDay, setSelectedDay] = useState("Sun."); // Default selected day
@@ -32,30 +34,15 @@ export default function DashboardPage() {
   ];
 
   const calorieData = weeklyCalories[currentWeek]; // Get data for the current week
-  const maxCalories = 2500; // Maximum calorie value (for scaling the chart)
   const BMR = 2000; // Basal Metabolic Rate (BMR)
-
-  const data = [
-    { weekDay: "Mon", count: 1000 },
-    { weekDay: "Tue", count: 800 },
-    { weekDay: "Wed", count: 2310 },
-    { weekDay: "Thu", count: 1583 },
-    { weekDay: "Fri", count: 2233 },
-    { weekDay: "Sat", count: 1832 },
-    { weekDay: "Sun", count: 1693 },
-  ];
-
-  const calorieData = weeklyCalories[currentWeek];
-  const BMR = 2000;
-
   const meals = [
     { meal: "Breakfast", calories: 350 },
     { meal: "Lunch", calories: 850 },
     { meal: "Dinner", calories: 750 },
   ];
 
-  const handleBarClick = (data: any) => {
-    setSelectedDay(data.weekDay);
+  const handleBarClick = (day: string) => {
+    setSelectedDay(day);
   };
 
   useEffect(() => {
@@ -77,7 +64,7 @@ export default function DashboardPage() {
           datasets: [
             {
               type: "bar",
-              label: "Total Calories",
+              label: "當日總熱量",
               data: calorieData.map((row) => row.totalCalories),
               backgroundColor: "rgba(54, 162, 235, 0.6)",
               borderColor: "rgba(54, 162, 235, 1)",
@@ -107,10 +94,11 @@ export default function DashboardPage() {
               max: maxCalories + 200,
             },
           },
-          onClick: (event, elements) => {
+          onClick: (_, elements) => {
             if (elements.length > 0) {
               const index = elements[0].index;
-              setSelectedDay(calorieData[index].day);
+
+              handleBarClick(calorieData[index].day);
             }
           },
         },
@@ -126,22 +114,22 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             {/* Previous Week */}
             <button
-              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               aria-label="Previous Week"
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transi2tion"
+              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
                 className="w-6 h-6 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M15.75 19.5L8.25 12l7.5-7.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
                 />
               </svg>
             </button>
@@ -152,26 +140,26 @@ export default function DashboardPage() {
 
             {/* Next Week */}
             <button
+              aria-label="Next Week"
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               onClick={() =>
                 setCurrentWeek((prev) =>
                   Math.min(prev + 1, weeklyCalories.length - 1)
                 )
               }
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-              aria-label="Next Week"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
                 className="w-6 h-6 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
                 />
               </svg>
             </button>
@@ -184,33 +172,40 @@ export default function DashboardPage() {
         </div>
 
         {/* 詳細熱量信息 */}
-        <div className="w-full max-w-lg p-4 bg-gray-200 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-2">{selectedDay}</h3>
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium">Total Calories</span>
-            <span className="text-lg font-bold">
-              {calorieData.find(({ day }) => day === selectedDay)
-                ?.totalCalories ?? 0}
-            </span>
-          </div>
-          <hr className="border-gray-400 mb-4" />
-          {meals.map((item, index) => (
-            <div key={index} className="flex justify-between items-center mb-3">
-              <span className="text-sm font-medium">{item.meal}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{item.calories}</span>
-                <button className="w-6 h-6 bg-blue-300 rounded-full text-white flex items-center justify-center">
-                  ...
-                </button>
-              </div>
+        <Card className="w-full max-w-lg px-2">
+          <CardHeader>
+            <h3 className="block text-lg font-semibold">{selectedDay}</h3>
+          </CardHeader>
+          <CardBody>
+            <div className="flex justify-between mb-2">
+              <p>當日總熱量</p>
+              <p className="text-lg font-semibold">
+                {calorieData.find(({ day }) => day === selectedDay)
+                  ?.totalCalories ?? 0}
+              </p>
             </div>
-          ))}
-          <div className="flex justify-end">
-            <button className="px-4 py-2 bg-purple-500 text-white rounded-lg">
-              Add
-            </button>
-          </div>
-        </div>
+            <Divider />
+            <div className="mb-2">
+              {meals.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center my-2"
+                >
+                  <h4 className="text-sm">{item.meal}</h4>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg">{item.calories}</p>
+                    <Button isIconOnly radius="full" size="sm">
+                      <HorizontalDotsIcon className="fill-white" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button>新增紀錄</Button>
+            </div>
+          </CardBody>
+        </Card>
       </section>
     </DefaultLayout>
   );

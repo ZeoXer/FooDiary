@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import DefaultLayout from "@/layouts/default";
 // import { Navbar } from "@/components/navbar"; // 確保路徑正確
 
@@ -27,17 +28,17 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center mb-6">
               <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center">
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
                   className="w-12 h-12 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
+                    d="M15.75 9A3.75 3.75 0 1112 5.25 3.75 3.75 0 0115.75 9zM21 20.25a8.25 8.25 0 10-18 0"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M15.75 9A3.75 3.75 0 1112 5.25 3.75 3.75 0 0115.75 9zM21 20.25a8.25 8.25 0 10-18 0"
                   />
                 </svg>
               </div>

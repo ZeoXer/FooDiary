@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+
 import DefaultLayout from "@/layouts/default";
 
 export default function ChatboxPage() {
@@ -19,6 +20,7 @@ export default function ChatboxPage() {
       { type: "user", text: userInput },
       { type: "bot", text: `您剛剛說了：「${userInput}」` }, // 模擬 Chatbot 回應
     ];
+
     setMessages(newMessages);
     setUserInput("");
   };
@@ -77,8 +79,8 @@ export default function ChatboxPage() {
             {quickReplies.map((reply, index) => (
               <Button
                 key={index}
-                size="sm"
                 className="bg-purple-500 text-white"
+                size="sm"
                 onClick={() => handleQuickReply(reply)}
               >
                 {reply}
@@ -89,15 +91,15 @@ export default function ChatboxPage() {
           {/* Input Box */}
           <div className="flex items-center p-4">
             <Input
-              size="lg"
+              className="flex-grow mr-2"
               placeholder="Message"
+              size="lg"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              className="flex-grow mr-2"
             />
             <Button
-              size="lg"
               className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform"
+              size="lg"
               onClick={handleSendMessage}
             >
               ➤

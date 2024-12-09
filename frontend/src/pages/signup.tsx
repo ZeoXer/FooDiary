@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+import { Link } from "@nextui-org/link";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -25,8 +26,8 @@ export default function SignupPage() {
           <h1 className={title()}>成為新用戶</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
-          <Input label="Name" size="lg" />
-          <Input label="Email" size="lg" type="email" />
+          <Input label="使用者名稱" size="lg" />
+          <Input label="信箱" size="lg" type="email" />
           <Input
             endContent={
               <button
@@ -42,7 +43,7 @@ export default function SignupPage() {
                 )}
               </button>
             }
-            label="Password"
+            label="密碼"
             size="lg"
             type={isVisible ? "text" : "password"}
           />
@@ -51,16 +52,19 @@ export default function SignupPage() {
             <Button size="lg" startContent={<GoogleLogo className="w-6" />}>
               Google 註冊
             </Button>
-            <Button size="lg" startContent={<FacebookLogo className="w-6" />}>
+            <Button
+              size="lg"
+              startContent={<FacebookLogo className="w-6 shrink-0" />}
+            >
               Facebook 註冊
             </Button>
           </div>
           <div className="mt-4 text-center">
-            <span className="text-sm">
-              Already have an account?{" "}
-              <a href="/signup" className="text-blue-500 hover:underline">
-                Log in here.
-              </a>
+            <span>
+              已經有帳號了？前往
+              <Link href="/login" underline="hover">
+                登入
+              </Link>
             </span>
           </div>
         </div>

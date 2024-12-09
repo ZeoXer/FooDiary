@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import DefaultLayout from "@/layouts/default";
 
 export default function FoodRecordPage() {
@@ -19,6 +20,7 @@ export default function FoodRecordPage() {
       hour: "2-digit",
       minute: "2-digit",
     });
+
     setTime(formattedTime);
 
     // 格式化日期 (e.g., 2024 Oct 11)
@@ -27,6 +29,7 @@ export default function FoodRecordPage() {
       month: "short",
       day: "2-digit",
     });
+
     setDate(formattedDate);
   }, []);
 
@@ -36,12 +39,14 @@ export default function FoodRecordPage() {
 
   const handleInputChange = (index, field, value) => {
     const newEntries = [...foodEntries];
+
     newEntries[index][field] = value;
     setFoodEntries(newEntries);
   };
 
   const handleDeleteEntry = (index) => {
     const newEntries = foodEntries.filter((_, i) => i !== index);
+
     setFoodEntries(newEntries);
   };
 
@@ -56,6 +61,7 @@ export default function FoodRecordPage() {
     });
 
     const data = await response.json();
+
     setRecommendation(data.recommendation || "無法產生建議");
   };
 
@@ -70,9 +76,9 @@ export default function FoodRecordPage() {
         <h1 className="text-2xl font-bold mb-2">What did you eat?</h1>
         <div className="flex items-center gap-4 mb-4">
           <select
+            className="bg-gray-200 text-gray-600 py-1 px-3 rounded"
             value={meal}
             onChange={(e) => setMeal(e.target.value)}
-            className="bg-gray-200 text-gray-600 py-1 px-3 rounded"
           >
             <option value="Breakfast">早餐</option>
             <option value="Lunch">午餐</option>
@@ -92,38 +98,38 @@ export default function FoodRecordPage() {
                 <div key={index} className="flex items-center gap-2">
                   {/* 刪除按鈕 */}
                   <button
-                    onClick={() => handleDeleteEntry(index)}
                     className="bg-purple-500 text-white px-2 py-1 rounded hover:bg-purple-600"
+                    onClick={() => handleDeleteEntry(index)}
                   >
                     ✕
                   </button>
                   {/* 輸入框：寬度相同 */}
                   <input
-                    type="text"
+                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                     placeholder="食物內容"
+                    type="text"
                     value={entry.name}
                     onChange={(e) =>
                       handleInputChange(index, "name", e.target.value)
                     }
-                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                   />
                   <input
-                    type="text"
+                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                     placeholder="克數 (選填)"
+                    type="text"
                     value={entry.weight}
                     onChange={(e) =>
                       handleInputChange(index, "weight", e.target.value)
                     }
-                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                   />
                   <input
-                    type="text"
+                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                     placeholder="卡路里 (選填)"
+                    type="text"
                     value={entry.calories}
                     onChange={(e) =>
                       handleInputChange(index, "calories", e.target.value)
                     }
-                    className="border p-2 rounded text-sm flex-1 min-w-[100px]"
                   />
                 </div>
               ))}
@@ -132,16 +138,16 @@ export default function FoodRecordPage() {
 
           {/* + 按鈕固定在框內底部 */}
           <button
-            onClick={handleAddEntry}
             className="bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 w-full"
+            onClick={handleAddEntry}
           >
             +
           </button>
         </div>
 
         <button
-          onClick={handleGenerateRecommendation}
           className="w-full bg-purple-500 text-white py-2 rounded-lg mt-4 hover:bg-purple-600"
+          onClick={handleGenerateRecommendation}
         >
           飲食建議生成
         </button>
@@ -152,8 +158,8 @@ export default function FoodRecordPage() {
         </div>
 
         <button
-          onClick={handleSubmitResults}
           className="w-full bg-purple-500 text-white py-2 rounded-lg mt-4 hover:bg-purple-600"
+          onClick={handleSubmitResults}
         >
           紀錄結果
         </button>
