@@ -28,8 +28,8 @@ export const Navbar = () => {
               alt="Foodiary Logo"
               src={
                 theme === "light"
-                  ? "/public/assets/FooDiary.png"
-                  : "/public/assets/FooDiary-white.png"
+                  ? "/assets/FooDiary.png"
+                  : "/assets/FooDiary-white.png"
               }
               width={60}
             />

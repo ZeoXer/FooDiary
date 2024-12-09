@@ -8,5 +8,12 @@ export default defineConfig({
   server: {
     host: "0.0.0.0", // 讓伺服器綁定所有網路接口
     port: 3000, // 你可以修改為想要的埠號
+    proxy: {
+      "/api": {
+        target: "https://foodiary-rag.zeoxer.com", // 將所有 /api 開頭的請求代理到後端伺服器
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
 });
