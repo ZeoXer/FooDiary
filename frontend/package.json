@@ -23,6 +23,7 @@
     "@nextui-org/link": "2.0.35",
     "@nextui-org/navbar": "2.0.37",
     "@nextui-org/radio": "^2.1.5",
+    "@nextui-org/skeleton": "^2.2.3",
     "@nextui-org/snippet": "2.0.43",
     "@nextui-org/spinner": "^2.2.4",
     "@nextui-org/switch": "2.0.34",

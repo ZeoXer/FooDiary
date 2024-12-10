@@ -3,6 +3,7 @@ import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Avatar } from "@nextui-org/avatar";
 import { Spinner } from "@nextui-org/spinner";
+import { Skeleton } from "@nextui-org/skeleton";
 
 import DefaultLayout from "@/layouts/default";
 import { chatWithBot, getChatRecords } from "@/apis/chat";
@@ -11,8 +12,10 @@ import MarkdownDisplay from "@/components/markdown-display";
 
 export default function ChatboxPage() {
   const [messagesContent, setMessagesContent] = useState<ChatMessage[]>([]);
+  const [timestamp, setTimestamp] = useState<number | undefined>(undefined);
   const [userInput, setUserInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
   const quickReplies = ["問題一", "問題二", "問題三"]; // 可以設定問題(? 但不確定要不要留這個功能
@@ -27,24 +30,53 @@ export default function ChatboxPage() {
     if (!userInput.trim()) return;
 
     setIsGenerating(true);
-    const { content } = await chatWithBot("user_0", userInput);
-
-    const newMessages: ChatMessage[] = [
-      ...messagesContent,
-      { role: "user", message: userInput },
-      { role: "bot", message: content },
-    ];
-
-    setMessagesContent(newMessages);
     setUserInput("");
+    setMessagesContent((prev) =>
+      prev.concat({ role: "user", message: userInput })
+    );
+
+    const { response } = await chatWithBot("user_0", userInput);
+
+    setMessagesContent((prev) =>
+      prev.concat({ role: "bot", message: response })
+    );
     setIsGenerating(false);
   };
 
-  const handleGetChatRecords = async (userId: string) => {
-    const data = await getChatRecords(userId);
+  const loadMoreContent = async () => {
+    if (!timestamp) return;
+
+    setIsLoading(true);
+    const data = await handleGetChatRecords("user_0", timestamp);
+
+    if (data.content.length === 0) {
+      setIsLoading(false);
+      setTimestamp(-1);
+
+      return;
+    }
+
+    const chatContents = data.content
+      .map((content: any) =>
+        content.chat_content.map((chat: any) => ({
+          role: chat.role,
+          message: chat.message,
+        }))
+      )
+      .reverse()
+      .flat();
+
+    setTimestamp(data.content[data.content.length - 1].timestamp);
+    setMessagesContent((prev) => chatContents.reverse().concat(prev));
+    setIsLoading(false);
+  };
+
+  const handleGetChatRecords = async (userId: string, timestamp?: number) => {
+    const data = await getChatRecords(userId, timestamp);
 
     return data;
   };
+
   const handleQuickReply = (message: string) => {
     setMessagesContent([
       ...messagesContent,
@@ -79,6 +111,7 @@ export default function ChatboxPage() {
         )
         .flat();
 
+      setTimestamp(contents[contents.length - 1].timestamp);
       setMessagesContent(chatContents.reverse());
     });
   }, []);
@@ -90,9 +123,36 @@ export default function ChatboxPage() {
     }
   }, [messagesContent]);
 
+  useEffect(() => {
+    document.addEventListener("scroll", () => {
+      const moreContentBtn = document.getElementById("more-content");
+
+      if (window.scrollY === 0) {
+        moreContentBtn?.classList.remove("pointer-events-none");
+        moreContentBtn?.classList.remove("!opacity-0");
+        moreContentBtn?.classList.add("opacity-100");
+      } else {
+        moreContentBtn?.classList.add("pointer-events-none");
+        moreContentBtn?.classList.remove("opacity-100");
+        moreContentBtn?.classList.add("!opacity-0");
+      }
+    });
+  }, []);
+
   return (
     <DefaultLayout>
       <section className="flex flex-col">
+        <Button
+          className="fixed top-20 left-1/2 -translate-x-1/2 transition"
+          id="more-content"
+          isDisabled={timestamp === -1}
+          isLoading={isLoading}
+          radius="full"
+          variant="ghost"
+          onClick={loadMoreContent}
+        >
+          {timestamp === -1 ? "這裡已經是對話的起點" : "載入更多對話"}
+        </Button>
         {/* Chat Window */}
         <div className="w-full max-w-lg mx-auto pb-32">
           {messagesContent.map((messageContent, index) => (
@@ -123,6 +183,27 @@ export default function ChatboxPage() {
               </div>
             </div>
           ))}
+          {isGenerating && (
+            <div className="flex mb-6 gap-2">
+              <Avatar
+                classNames={{ base: "bg-white" }}
+                size="sm"
+                src="/assets/FooDiary.png"
+              />
+              <div className="w-full max-w-xs bg-gray-300 p-3 rounded-lg grid gap-2">
+                <Skeleton className="w-3/5 rounded-lg">
+                  <div className="h-3 bg-secondary" />
+                </Skeleton>
+                <Skeleton className="w-4/5 rounded-lg">
+                  <div className="h-3 bg-secondary" />
+                </Skeleton>
+                <Skeleton className="w-2/5 rounded-lg">
+                  <div className="h-3 bg-secondary" />
+                </Skeleton>
+              </div>
+            </div>
+          )}
+
           {/* 滾動到此處 */}
           <div ref={chatWindowRef} />
         </div>
