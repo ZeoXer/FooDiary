@@ -62,15 +62,19 @@ export default function ChatboxPage() {
 
     const chatContents = data.content
       .map((content: any) =>
-        content.chat_content.map((chat: any) => ({
-          role: chat.role,
-          message: chat.message,
-        }))
+        content.chat_content
+          .map((chat: any) => ({
+            role: chat.role,
+            message: chat.message,
+          }))
+          .reverse()
       )
       .flat();
 
+    const reversedChatContents = chatContents.reverse();
+
     setTimestamp(data.content[data.content.length - 1].timestamp);
-    setMessagesContent((prev) => chatContents.reverse().concat(prev));
+    setMessagesContent((prev) => reversedChatContents.concat(prev));
     setIsLoading(false);
   };
 
