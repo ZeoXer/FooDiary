@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import DefaultLayout from "@/layouts/default";
 
 type FoodEntry = {
@@ -52,9 +53,9 @@ export default function MealDetailPage() {
         {/* Header with Back Button */}
         <div className="w-full max-w-lg flex items-center mb-4">
           <button
-            onClick={handleBack}
-            className="text-2xl font-bold text-gray-600 hover:text-gray-900"
             aria-label="返回"
+            className="text-2xl font-bold text-gray-600 hover:text-gray-900"
+            onClick={handleBack}
           >
             &lt;
           </button>
@@ -121,20 +122,20 @@ export default function MealDetailPage() {
         {/* Buttons */}
         <div className="flex gap-4 mt-6">
           <button
-            onClick={() => console.log("Chat with AI")}
             className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+            onClick={() => console.log("Chat with AI")}
           >
             Chat with AI
           </button>
           <button
-            onClick={() => console.log("Edit meal details")}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            onClick={() => console.log("Edit meal details")}
           >
             Edit
           </button>
           <button
-            onClick={() => console.log("Delete meal details")}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            onClick={() => console.log("Delete meal details")}
           >
             Delete
           </button>

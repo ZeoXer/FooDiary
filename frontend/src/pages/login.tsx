@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+import { Link } from "@nextui-org/link";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -25,7 +26,7 @@ export default function LoginPage() {
           <h1 className={title()}>使用者登入</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
-          <Input label="Email" size="lg" type="email" />
+          <Input label="信箱" size="lg" type="email" />
           <div>
             <Input
               endContent={
@@ -42,14 +43,14 @@ export default function LoginPage() {
                   )}
                 </button>
               }
-              label="Password"
+              label="密碼"
               size="lg"
               type={isVisible ? "text" : "password"}
             />
             <div className="mt-2 text-right">
-              <a href="#" className="text-sm text-blue-500 hover:underline">
-                Forget Password?
-              </a>
+              <Link href="#" underline="hover">
+                忘記密碼？
+              </Link>
             </div>
           </div>
           <Button size="lg">登入</Button>
@@ -69,11 +70,11 @@ export default function LoginPage() {
           </div>
           {/* 新增註冊文字 */}
           <div className="mt-4 text-center">
-            <span className="text-sm">
-              Don't have an account?{" "}
-              <a href="/signup" className="text-blue-500 hover:underline">
-                Register here.
-              </a>
+            <span>
+              還沒有帳號嗎？前往
+              <Link href="/signup" underline="hover">
+                註冊
+              </Link>
             </span>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DatePicker } from "@nextui-org/date-picker";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+import { RadioGroup, Radio } from "@nextui-org/radio";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -22,95 +23,47 @@ export default function InfoFormPage() {
           <div className="grid gap-6 max-w-lg w-full">
             {/* 日期選擇器 */}
             <div>
-              <DatePicker showMonthAndYearPickers label="Date" />
+              <DatePicker showMonthAndYearPickers label="出生日期" />
             </div>
             {/* 身高和體重 */}
-            <Input label="Height" placeholder="cm" size="lg" type="number" />
-            <Input label="Weight" placeholder="kg" size="lg" type="number" />
+            <Input label="身高 (cm)" size="lg" type="number" />
+            <Input label="體重 (kg)" size="lg" type="number" />
             {/* 性別選擇 */}
             <div>
-              <label className="block mb-2 text-lg font-medium text-gray-700">
-                生理性別
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="biologicalSex"
-                    value="男性"
-                    checked={biologicalSex === "男性"}
-                    onChange={(e) => setBiologicalSex(e.target.value)}
-                  />
-                  <span>男性</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="biologicalSex"
-                    value="女性"
-                    checked={biologicalSex === "女性"}
-                    onChange={(e) => setBiologicalSex(e.target.value)}
-                  />
-                  <span>女性</span>
-                </label>
-              </div>
+              <RadioGroup
+                color="primary"
+                defaultValue="male"
+                label="生理性別"
+                orientation="horizontal"
+                onValueChange={setBiologicalSex}
+              >
+                <Radio value="male">男性</Radio>
+                <Radio value="female">女性</Radio>
+              </RadioGroup>
             </div>
             {/* 運動頻率 */}
             <div>
-              <label className="block mb-2 text-lg font-medium text-gray-700">
-                每周訓練頻率?
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="exerciseFrequency"
-                    value="Never"
-                    checked={exerciseFrequency === "Never"}
-                    onChange={(e) => setExerciseFrequency(e.target.value)}
-                  />
-                  <span>Never</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="exerciseFrequency"
-                    value="1~3"
-                    checked={exerciseFrequency === "1~3"}
-                    onChange={(e) => setExerciseFrequency(e.target.value)}
-                  />
-                  <span>1~3</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="exerciseFrequency"
-                    value="4~5"
-                    checked={exerciseFrequency === "4~5"}
-                    onChange={(e) => setExerciseFrequency(e.target.value)}
-                  />
-                  <span>4~5</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="exerciseFrequency"
-                    value="6~7"
-                    checked={exerciseFrequency === "6~7"}
-                    onChange={(e) => setExerciseFrequency(e.target.value)}
-                  />
-                  <span>6~7</span>
-                </label>
-              </div>
+              <RadioGroup
+                color="primary"
+                defaultValue="never"
+                label="每周運動頻率？"
+                orientation="horizontal"
+                onValueChange={setExerciseFrequency}
+              >
+                <Radio value="never">從不</Radio>
+                <Radio value="1-3">1 ~ 3 次</Radio>
+                <Radio value="4-5">4 ~ 5 次</Radio>
+                <Radio value="6-7">6 ~ 7 次</Radio>
+              </RadioGroup>
             </div>
             {/* 提交按鈕 */}
             <div className="text-center">
-              <Button size="lg" className="bg-gray-500 text-white">
-                Submit
-              </Button>
+              <Button size="lg">提交</Button>
             </div>
           </div>
         </div>
+        <span>{biologicalSex}</span>
+        <span>{exerciseFrequency}</span>
       </section>
     </DefaultLayout>
   );

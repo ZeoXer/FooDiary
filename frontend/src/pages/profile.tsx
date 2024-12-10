@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+
 import DefaultLayout from "@/layouts/default";
 
 // 定義 UserInfo 的型別，讓 avatar 支援 string | null
@@ -46,8 +47,10 @@ export default function ProfilePage() {
   // 處理頭像變更
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
       const reader = new FileReader();
+
       reader.onloadend = () => {
         setEditInfo((prev) => ({
           ...prev,
@@ -88,24 +91,24 @@ export default function ProfilePage() {
               >
                 {editInfo.avatar ? (
                   <img
-                    src={editInfo.avatar}
                     alt="User Avatar"
                     className="w-full h-full object-cover"
+                    src={editInfo.avatar}
                   />
                 ) : (
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
                     className="w-12 h-12 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
                     <circle cx="12" cy="7" r="4" stroke="currentColor" />
                     <path
+                      d="M6 18a6 6 0 0112 0"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="M6 18a6 6 0 0112 0"
                     />
                   </svg>
                 )}
@@ -118,10 +121,10 @@ export default function ProfilePage() {
               </div>
               {/* 隱藏的檔案上傳 input */}
               <input
-                type="file"
-                accept="image/*"
                 ref={fileInputRef}
+                accept="image/*"
                 className="hidden"
+                type="file"
                 onChange={handleAvatarChange}
               />
               {!isEditing ? (
@@ -174,8 +177,8 @@ export default function ProfilePage() {
                   <div className="flex justify-between text-sm">
                     <span>Age</span>
                     <input
-                      type="number"
                       className="w-24 p-1 border rounded"
+                      type="number"
                       value={editInfo.age}
                       onChange={(e) =>
                         handleInputChange("age", Number(e.target.value))
@@ -185,8 +188,8 @@ export default function ProfilePage() {
                   <div className="flex justify-between text-sm">
                     <span>Height</span>
                     <input
-                      type="number"
                       className="w-24 p-1 border rounded"
+                      type="number"
                       value={editInfo.height}
                       onChange={(e) =>
                         handleInputChange("height", Number(e.target.value))
@@ -196,8 +199,8 @@ export default function ProfilePage() {
                   <div className="flex justify-between text-sm">
                     <span>Weight</span>
                     <input
-                      type="number"
                       className="w-24 p-1 border rounded"
+                      type="number"
                       value={editInfo.weight}
                       onChange={(e) =>
                         handleInputChange("weight", Number(e.target.value))
@@ -207,8 +210,8 @@ export default function ProfilePage() {
                   <div className="flex justify-between text-sm">
                     <span>Exercise Frequency</span>
                     <input
-                      type="number"
                       className="w-24 p-1 border rounded"
+                      type="number"
                       value={editInfo.exerciseFrequency}
                       onChange={(e) =>
                         handleInputChange(

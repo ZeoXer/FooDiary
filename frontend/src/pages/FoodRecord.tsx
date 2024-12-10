@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import DefaultLayout from "@/layouts/default";
 
 type FoodEntry = {
@@ -73,6 +74,7 @@ export default function FoodRecordPage() {
       }
 
       const data = await response.json();
+
       setRecommendation(data.recommendation || "無法產生建議");
     } catch (error) {
       console.error("Error generating recommendation:", error);
@@ -84,6 +86,7 @@ export default function FoodRecordPage() {
   const handleSubmitResults = () => {
     if (foodEntries.some((entry) => !entry.name.trim())) {
       alert("請確認所有食物條目已填寫名稱！");
+
       return;
     }
 
@@ -97,9 +100,9 @@ export default function FoodRecordPage() {
         {/* 餐類型與時間顯示 */}
         <div className="flex items-center gap-4 mb-6">
           <select
+            className="bg-gray-200 text-gray-600 py-2 px-4 rounded"
             value={mealType}
             onChange={(e) => setMealType(e.target.value)}
-            className="bg-gray-200 text-gray-600 py-2 px-4 rounded"
           >
             <option value="Breakfast">早餐</option>
             <option value="Lunch">午餐</option>
@@ -117,41 +120,41 @@ export default function FoodRecordPage() {
               <div key={index} className="flex items-center gap-4">
                 {/* 刪除按鈕 */}
                 <button
-                  onClick={() => handleDeleteEntry(index)}
-                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                   aria-label="刪除條目"
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  onClick={() => handleDeleteEntry(index)}
                 >
                   ✕
                 </button>
                 {/* 食物名稱輸入框 */}
                 <input
-                  type="text"
+                  className="border p-2 rounded text-sm flex-1"
                   placeholder="食物名稱"
+                  type="text"
                   value={entry.name}
                   onChange={(e) =>
                     handleInputChange(index, "name", e.target.value)
                   }
-                  className="border p-2 rounded text-sm flex-1"
                 />
                 {/* 重量輸入框 */}
                 <input
-                  type="text"
+                  className="border p-2 rounded text-sm flex-1"
                   placeholder="重量 (克)"
+                  type="text"
                   value={entry.weight}
                   onChange={(e) =>
                     handleInputChange(index, "weight", e.target.value)
                   }
-                  className="border p-2 rounded text-sm flex-1"
                 />
                 {/* 卡路里輸入框 */}
                 <input
-                  type="text"
+                  className="border p-2 rounded text-sm flex-1"
                   placeholder="卡路里"
+                  type="text"
                   value={entry.calories}
                   onChange={(e) =>
                     handleInputChange(index, "calories", e.target.value)
                   }
-                  className="border p-2 rounded text-sm flex-1"
                 />
               </div>
             ))}
@@ -159,8 +162,8 @@ export default function FoodRecordPage() {
 
           {/* 新增條目按鈕 */}
           <button
-            onClick={handleAddEntry}
             className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 w-full mt-4"
+            onClick={handleAddEntry}
           >
             新增條目 +
           </button>
@@ -168,8 +171,8 @@ export default function FoodRecordPage() {
 
         {/* 生成建議按鈕 */}
         <button
-          onClick={handleGenerateRecommendation}
           className="w-full bg-green-500 text-white py-2 rounded-lg mt-4 hover:bg-green-600"
+          onClick={handleGenerateRecommendation}
         >
           生成飲食建議
         </button>
@@ -182,8 +185,8 @@ export default function FoodRecordPage() {
 
         {/* 提交按鈕 */}
         <button
-          onClick={handleSubmitResults}
           className="w-full bg-purple-500 text-white py-2 rounded-lg mt-4 hover:bg-purple-600"
+          onClick={handleSubmitResults}
         >
           提交紀錄
         </button>

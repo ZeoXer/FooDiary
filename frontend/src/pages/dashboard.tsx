@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
-import { Chart, ChartEvent, ActiveElement } from "chart.js/auto";
+import { Chart } from "chart.js/auto";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
+import { Divider } from "@nextui-org/divider";
+import { Button } from "@nextui-org/button";
+
 import DefaultLayout from "@/layouts/default";
-
-type CalorieData = {
-  day: string;
-  totalCalories: number;
-};
-
-type MealData = {
-  meal: string;
-  calories: number;
-};
+import { HorizontalDotsIcon } from "@/components/icons";
 
 export default function DashboardPage() {
-  const [selectedDay, setSelectedDay] = useState("Sun.");
-  const [currentWeek, setCurrentWeek] = useState(0);
+  const [selectedDay, setSelectedDay] = useState("Sun."); // Default selected day
+  const [currentWeek, setCurrentWeek] = useState(0); // Default week index
 
   // Weekly calorie data
-  const weeklyCalories: CalorieData[][] = [
+  const weeklyCalories = [
     [
       { day: "Sun.", totalCalories: 1500 },
       { day: "Mon.", totalCalories: 2200 },
@@ -38,14 +33,17 @@ export default function DashboardPage() {
     ],
   ];
 
-  const calorieData = weeklyCalories[currentWeek];
-  const BMR = 2000;
-
-  const meals: MealData[] = [
+  const calorieData = weeklyCalories[currentWeek]; // Get data for the current week
+  const BMR = 2000; // Basal Metabolic Rate (BMR)
+  const meals = [
     { meal: "Breakfast", calories: 350 },
     { meal: "Lunch", calories: 850 },
     { meal: "Dinner", calories: 750 },
   ];
+
+  const handleBarClick = (day: string) => {
+    setSelectedDay(day);
+  };
 
   useEffect(() => {
     if (Chart.getChart("calories")) {
@@ -66,7 +64,7 @@ export default function DashboardPage() {
           datasets: [
             {
               type: "bar",
-              label: "Total Calories",
+              label: "當日總熱量",
               data: calorieData.map((row) => row.totalCalories),
               backgroundColor: "rgba(54, 162, 235, 0.6)",
               borderColor: "rgba(54, 162, 235, 1)",
@@ -96,112 +94,118 @@ export default function DashboardPage() {
               max: maxCalories + 200,
             },
           },
-          onClick: (_: ChartEvent, elements: ActiveElement[]) => {
+          onClick: (_, elements) => {
             if (elements.length > 0) {
-              const index = elements[0].index as number;
-              setSelectedDay(calorieData[index].day);
+              const index = elements[0].index;
+
+              handleBarClick(calorieData[index].day);
             }
           },
         },
       });
     }
-  }, [currentWeek, calorieData]);
-
-  const handlePreviousWeek = () => {
-    setCurrentWeek((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleNextWeek = () => {
-    setCurrentWeek((prev) => Math.min(prev + 1, weeklyCalories.length - 1));
-  };
+  }, [currentWeek]);
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        {/* Week Navigation */}
+        {/* 周切換 */}
         <div className="w-full max-w-lg p-4 bg-gray-100 rounded-lg shadow">
           <div className="flex items-center justify-between">
+            {/* Previous Week */}
             <button
-              onClick={handlePreviousWeek}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               aria-label="Previous Week"
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transi2tion"
+              onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
                 className="w-6 h-6 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M15.75 19.5L8.25 12l7.5-7.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
                 />
               </svg>
             </button>
 
             <h2 className="text-lg font-semibold">
-              Week {currentWeek + 1} of {weeklyCalories.length}
+              Week of {7 + currentWeek * 7}-{13 + currentWeek * 7}
             </h2>
 
+            {/* Next Week */}
             <button
-              onClick={handleNextWeek}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
               aria-label="Next Week"
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              onClick={() =>
+                setCurrentWeek((prev) =>
+                  Math.min(prev + 1, weeklyCalories.length - 1)
+                )
+              }
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
                 className="w-6 h-6 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M8.25 4.5l7.5 7.5-7.5 7.5"
                 />
               </svg>
             </button>
           </div>
         </div>
 
-        {/* Calorie Chart */}
+        {/* 圖表 */}
         <div className="w-full max-w-lg">
-          <canvas id="calories"></canvas>
+          <canvas id="calories" />
         </div>
 
-        {/* Selected Day Details */}
-        <div className="w-full max-w-lg p-4 bg-gray-200 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-2">{selectedDay}</h3>
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-medium">Total Calories</span>
-            <span className="text-lg font-bold">
-              {calorieData.find((item) => item.day === selectedDay)
-                ?.totalCalories ?? 0}
-            </span>
-          </div>
-          <hr className="border-gray-400 mb-4" />
-          {meals.map((item, index) => (
-            <div key={index} className="flex justify-between items-center mb-3">
-              <span className="text-sm font-medium">{item.meal}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{item.calories}</span>
-                <button className="w-6 h-6 bg-blue-300 rounded-full text-white flex items-center justify-center">
-                  ...
-                </button>
-              </div>
+        {/* 詳細熱量信息 */}
+        <Card className="w-full max-w-lg px-2">
+          <CardHeader>
+            <h3 className="block text-lg font-semibold">{selectedDay}</h3>
+          </CardHeader>
+          <CardBody>
+            <div className="flex justify-between mb-2">
+              <p>當日總熱量</p>
+              <p className="text-lg font-semibold">
+                {calorieData.find(({ day }) => day === selectedDay)
+                  ?.totalCalories ?? 0}
+              </p>
             </div>
-          ))}
-          <div className="flex justify-end">
-            <button className="px-4 py-2 bg-purple-500 text-white rounded-lg">
-              Add
-            </button>
-          </div>
-        </div>
+            <Divider />
+            <div className="mb-2">
+              {meals.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center my-2"
+                >
+                  <h4 className="text-sm">{item.meal}</h4>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg">{item.calories}</p>
+                    <Button isIconOnly radius="full" size="sm">
+                      <HorizontalDotsIcon className="fill-white" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <Button>新增紀錄</Button>
+            </div>
+          </CardBody>
+        </Card>
       </section>
     </DefaultLayout>
   );
