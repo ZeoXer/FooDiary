@@ -67,7 +67,6 @@ export default function ChatboxPage() {
           message: chat.message,
         }))
       )
-      .reverse()
       .flat();
 
     setTimestamp(data.content[data.content.length - 1].timestamp);
@@ -90,6 +89,10 @@ export default function ChatboxPage() {
   };
 
   useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+
     if (messagesContent.length !== 0) return;
 
     handleGetChatRecords("user_0").then((data) => {
@@ -117,9 +120,6 @@ export default function ChatboxPage() {
 
       setTimestamp(contents[contents.length - 1].timestamp);
       setMessagesContent(chatContents.reverse());
-      if (chatWindowRef.current) {
-        chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
-      }
     });
   }, []);
 
