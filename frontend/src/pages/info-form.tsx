@@ -62,6 +62,8 @@ export default function InfoFormPage() {
             </div>
           </div>
         </div>
+        <span>{biologicalSex}</span>
+        <span>{exerciseFrequency}</span>
       </section>
     </DefaultLayout>
   );
