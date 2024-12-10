@@ -18,7 +18,7 @@ export default function ChatboxPage() {
   const [isLoading, setIsLoading] = useState(false);
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
-  const quickReplies = ["問題一", "問題二", "問題三"]; // 可以設定問題(? 但不確定要不要留這個功能
+  const quickReplies = ["問題一", "問題二", "問題三"];
 
   const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -28,6 +28,10 @@ export default function ChatboxPage() {
 
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
+
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
+    }
 
     setIsGenerating(true);
     setUserInput("");
@@ -113,15 +117,11 @@ export default function ChatboxPage() {
 
       setTimestamp(contents[contents.length - 1].timestamp);
       setMessagesContent(chatContents.reverse());
+      if (chatWindowRef.current) {
+        chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
+      }
     });
   }, []);
-
-  // 送出新訊息後自動滾動到最下方
-  useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messagesContent]);
 
   useEffect(() => {
     document.addEventListener("scroll", () => {
@@ -183,6 +183,7 @@ export default function ChatboxPage() {
               </div>
             </div>
           ))}
+
           {isGenerating && (
             <div className="flex mb-6 gap-2">
               <Avatar
@@ -203,7 +204,6 @@ export default function ChatboxPage() {
               </div>
             </div>
           )}
-
           {/* 滾動到此處 */}
           <div ref={chatWindowRef} />
         </div>
@@ -236,6 +236,7 @@ export default function ChatboxPage() {
             />
             <Button
               className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform"
+              isDisabled={isGenerating}
               size="lg"
               onClick={handleSendMessage}
             >
