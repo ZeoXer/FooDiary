@@ -3,11 +3,23 @@ const apiService = require('../../services/RAGService');
 const { User } = require('../../models/user');
 const { ChatRecord } = require('../../models/chatRecord');
 
+const socketMap = new Map();
+
 const chatController = {
 
     handleWebSocketConnection: (ws) => {
         console.log('A new user connected');
-        
+
+        ws.isAlive = true;
+
+        // 測試用
+        console.log("Connected users:", Array.from(socketMap.keys()));
+        // 
+
+        ws.on('pong', () => {
+            ws.isAlive = true;
+        });
+
         ws.on('message', async (message) => {
             try {
                 const { email, queryText } = JSON.parse(message);
@@ -26,6 +38,17 @@ const chatController = {
 
                 const userIdString = user._id.toString();
 
+                if (socketMap.has(userIdString)) {
+                    const oldSocket = socketMap.get(userIdString);
+                    console.log(`Closing old socket for userId: ${userIdString}`);
+                    oldSocket.close();
+                }
+
+                socketMap.set(userIdString, ws);
+
+                // 測試用
+                console.log("Connected users:", Array.from(socketMap.keys()));
+                //
                 const botResponse = await apiService.chatWithBot(userIdString, queryText);
 
                 const userMessageRecord = new ChatRecord({
@@ -58,10 +81,33 @@ const chatController = {
 
         ws.on('close', () => {
             console.log('A user disconnected');
+
+            for (const [userId, socket] of socketMap.entries()) {
+                if (socket === ws) {
+                    socketMap.delete(userId);
+                    console.log(`Removed userId ${userId} from socketMap`);
+                    break;
+                }
+            }
+            // 測試用
+            console.log("Connected users:", Array.from(socketMap.keys()));
+            //
         });
     }
 };
 
+setInterval(() => {
+    socketMap.forEach((socket, userId) => {
+        if (!socket.isAlive) {
+            console.log(`Removing inactive userId ${userId}`);
+            socketMap.delete(userId);
+            socket.terminate();
+            return;
+        }
+
+        socket.isAlive = false;
+        socket.ping();
+    });
+}, 30000);
+
 module.exports = chatController;
-
-

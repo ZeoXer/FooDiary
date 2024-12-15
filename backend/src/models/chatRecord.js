@@ -14,8 +14,7 @@ const chatRecordSchema = new mongoose.Schema({
     chatContent: { 
         type: String, 
         required: true, 
-        trim: true, 
-        maxlength: 2000 // 限制聊天內容長度
+        trim: true
     } // 聊天內容
 });
 
