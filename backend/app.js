@@ -35,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRouter);    
-app.use('/api/chat', chatRouter);  
+app.use('/api/chat', verifyToken, chatRouter);  
 app.use('/api/user', verifyToken, userRouter);    
 app.use('/api/record', verifyToken, recordRouter); 
 app.use('/api/healthy', healthyRouter); 

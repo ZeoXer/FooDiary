@@ -53,10 +53,6 @@ userDataSchema.statics.createUserData = async function ({ userID, birthDate, hei
 
 // Joi 驗證模型
 const UserDataModel = Joi.object({
-    userID: Joi.string().required().messages({
-        'string.base': '"使用者 ID" 必須為字串',
-        'any.required': '"使用者 ID" 為必填欄位'
-    }),
     birthDate: Joi.date().iso().required().messages({
         'date.base': '"出生日期" 必須是有效的日期格式',
         'date.isoDate': '"出生日期" 必須符合 ISO 8601 格式 (例如: YYYY-MM-DD)',
