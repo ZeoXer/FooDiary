@@ -1,6 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import DefaultLayout from "@/layouts/default";
+import { getUserData } from "@/apis/user";
+import { informationMap } from "@/config/site";
+import { UserIcon } from "@/components/icons";
 
 // 定義 UserInfo 的型別，讓 avatar 支援 string | null
 type UserInfo = {
@@ -9,32 +12,25 @@ type UserInfo = {
   age: number;
   height: number;
   weight: number;
-  exerciseFrequency: number;
-  avatar: string | null;
+  exerciseFrequency: string;
+  bmr: number;
 };
 
 export default function ProfilePage() {
   const [userInfo, setUserInfo] = useState<UserInfo>({
     name: "User",
-    email: "XXXXXXX@nccu.edu.tw",
-    age: 24,
-    height: 168,
-    weight: 74,
-    exerciseFrequency: 5,
-    avatar: null, // 頭像初始值
+    email: "xxxxx@xxx.xx",
+    age: 0,
+    height: 0,
+    weight: 0,
+    exerciseFrequency: "0",
+    bmr: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editInfo, setEditInfo] = useState<UserInfo>({ ...userInfo });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // 計算 BMR
-  const calculateBMR = () => {
-    return Math.round(
-      10 * userInfo.weight + 6.25 * userInfo.height - 5 * userInfo.age + 5
-    );
-  };
 
   // 處理輸入變更
   const handleInputChange = (field: keyof UserInfo, value: string | number) => {
@@ -45,21 +41,21 @@ export default function ProfilePage() {
   };
 
   // 處理頭像變更
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
 
-    if (file) {
-      const reader = new FileReader();
+  //   if (file) {
+  //     const reader = new FileReader();
 
-      reader.onloadend = () => {
-        setEditInfo((prev) => ({
-          ...prev,
-          avatar: reader.result as string, // 將圖片以 Base64 格式存入
-        }));
-      };
-      reader.readAsDataURL(file); // 讀取檔案
-    }
-  };
+  //     reader.onloadend = () => {
+  //       setEditInfo((prev) => ({
+  //         ...prev,
+  //         avatar: reader.result as string, // 將圖片以 Base64 格式存入
+  //       }));
+  //     };
+  //     reader.readAsDataURL(file); // 讀取檔案
+  //   }
+  // };
 
   // 保存變更
   const handleSave = () => {
@@ -73,9 +69,31 @@ export default function ProfilePage() {
     setIsEditing(false); // 結束編輯模式
   };
 
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click(); // 模擬點擊檔案上傳按鈕
+  // const handleAvatarClick = () => {
+  //   fileInputRef.current?.click(); // 模擬點擊檔案上傳按鈕
+  // };
+
+  const handleGetUserData = async () => {
+    const { message, userData } = await getUserData();
+
+    if (message === "成功取得使用者資料") {
+      setUserInfo({
+        name: "User",
+        email: userData.userID.email,
+        age: userData.age,
+        height: userData.height,
+        weight: userData.weight,
+        exerciseFrequency: informationMap.exerciseFrequency[
+          userData.exerciseFrequency as keyof typeof informationMap.exerciseFrequency
+        ] as string,
+        bmr: userData.bmr,
+      });
+    }
   };
+
+  useEffect(() => {
+    handleGetUserData();
+  }, []);
 
   return (
     <div>
@@ -84,8 +102,7 @@ export default function ProfilePage() {
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow">
             {/* 用戶資訊 */}
             <div className="flex flex-col items-center mb-6">
-              {/* 點擊頭像觸發檔案上傳 */}
-              <div
+              {/* <div
                 className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer relative group"
                 onClick={handleAvatarClick}
               >
@@ -96,37 +113,24 @@ export default function ProfilePage() {
                     src={editInfo.avatar}
                   />
                 ) : (
-                  <svg
-                    className="w-12 h-12 text-gray-600"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <circle cx="12" cy="7" r="4" stroke="currentColor" />
-                    <path
-                      d="M6 18a6 6 0 0112 0"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <UserIcon />
                 )}
-                {/* 顯示提示文字 */}
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-white text-sm text-center">
                     Change Avatar
                   </span>
                 </div>
+              </div> */}
+              <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer relative group">
+                <UserIcon />
               </div>
-              {/* 隱藏的檔案上傳 input */}
-              <input
+              {/* <input
                 ref={fileInputRef}
                 accept="image/*"
                 className="hidden"
                 type="file"
                 onChange={handleAvatarChange}
-              />
+              /> */}
               {!isEditing ? (
                 <>
                   <h2 className="text-lg font-semibold mt-4">
@@ -259,7 +263,7 @@ export default function ProfilePage() {
             {/* BMR 計算結果 */}
             <div className="text-center">
               <h3 className="text-lg font-semibold mb-2">Estimated BMR</h3>
-              <p className="text-4xl font-bold">{calculateBMR()}</p>
+              <p className="text-4xl font-bold">{userInfo.bmr}</p>
             </div>
           </div>
         </section>
