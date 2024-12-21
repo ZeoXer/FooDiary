@@ -12,10 +12,12 @@ const resetPassword = async (req, res) => {
     }
 
     // 檢查 token 是否存在 or 過期
-    const email = await redisClient.get(`PASSWORD:RESET:${token}`);
-    if (!email) { 
+    const userToken = await redisClient.get(`PASSWORD:RESET:${token}`);
+    if (!userToken) { 
         return res.status(400).json({ message: '請重新申請忘記密碼' });
     }
+
+    const { email } = JSON.parse(userToken);
 
     // 檢查新密碼格式
     if (!passwordRegex.test(newPassword)) {
