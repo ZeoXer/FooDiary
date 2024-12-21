@@ -38,7 +38,7 @@ const forgetPassword = async (req, res) => {
                 Body: {
                     Html: {
                         Charset: 'UTF-8',
-                        Data: `<a href='${process.env.HOST_URL}/api/reset-password?token=${token}'>重設密碼</a>`
+                        Data: `<a href='${process.env.HOST_URL}/api/auth/resetPassword?token=${token}'>請點此重設密碼</a>`
                     }
                 },
                 Subject: {

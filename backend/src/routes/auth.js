@@ -3,6 +3,7 @@ const router = express.Router();
 const loginController = require('../controllers/auth/loginController');
 const signupController = require('../controllers/auth/signupController');
 const forgetPasswordController = require('../controllers/auth/forgetPasswordController');
+const resetPassword = require('../controllers/auth/resetPassword');
 
 // 一般登入
 router.post('/login', loginController.login); 
@@ -14,6 +15,6 @@ router.post('/signup', signupController.signup);
 router.post('/forgetPassword', forgetPasswordController.forgetPassword);
 
 // 重置密碼
-router.post('/resetPassword', resetPassword);
+router.post('/resetPassword', resetPassword.resetPassword);
 
 module.exports = router;
