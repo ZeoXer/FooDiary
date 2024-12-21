@@ -13,5 +13,7 @@ router.post('/signup', signupController.signup);
 // 忘記密碼
 router.post('/forgetPassword', forgetPasswordController.forgetPassword);
 
+// 重置密碼
+router.post('/resetPassword', resetPassword);
 
 module.exports = router;
