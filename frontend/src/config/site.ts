@@ -87,3 +87,20 @@ export const siteConfig = {
     sponsor: "https://patreon.com/jrgarciadev",
   },
 };
+
+export const informationMap = {
+  biologicalSex: {
+    female: 0,
+    male: 1,
+  },
+  exerciseFrequency: {
+    never: 0,
+    "1-3": 1,
+    "4-5": 2,
+    "6-7": 3,
+    0: 0,
+    1: "1-3",
+    2: "4-5",
+    3: "6-7",
+  },
+};

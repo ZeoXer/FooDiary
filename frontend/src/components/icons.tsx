@@ -389,3 +389,24 @@ export const HorizontalDotsIcon: React.FC<IconSvgProps> = (props) => {
     </svg>
   );
 };
+
+export const UserIcon: React.FC<IconSvgProps> = (props) => {
+  return (
+    <svg
+      className="w-12 h-12 text-gray-600"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <circle cx="12" cy="7" r="4" stroke="currentColor" />
+      <path
+        d="M6 18a6 6 0 0112 0"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};

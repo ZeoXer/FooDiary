@@ -10,7 +10,7 @@ export default defineConfig({
     port: 3000, // 你可以修改為想要的埠號
     proxy: {
       "/api": {
-        target: "https://foodiary-rag.zeoxer.com", // 將所有 /api 開頭的請求代理到後端伺服器
+        target: "http://localhost:8000", // 將所有 /api 開頭的請求代理到後端伺服器
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

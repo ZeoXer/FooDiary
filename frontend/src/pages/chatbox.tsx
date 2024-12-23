@@ -6,9 +6,11 @@ import { Spinner } from "@nextui-org/spinner";
 import { Skeleton } from "@nextui-org/skeleton";
 
 import DefaultLayout from "@/layouts/default";
-import { chatWithBot, getChatRecords } from "@/apis/chat";
+import { getChatRecords } from "@/apis/chat";
+import { getUserData } from "@/apis/user";
 import { ChatMessage } from "@/types";
 import MarkdownDisplay from "@/components/markdown-display";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatboxPage() {
   const [messagesContent, setMessagesContent] = useState<ChatMessage[]>([]);
@@ -16,132 +18,237 @@ export default function ChatboxPage() {
   const [userInput, setUserInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
   const quickReplies = ["問題一", "問題二", "問題三"];
+  const wsRef = useRef<WebSocket | null>(null);
 
-  const onKeyDownHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
+  // Fetch user email
+  const fetchUserEmail = async () => {
+    try {
+      const response = await getUserData();
+      const userEmail = response?.userData?.userID?.email;
+
+      if (userEmail) {
+        setEmail(userEmail);
+        return userEmail;
+      }
+
+      throw new Error("無法取得使用者 Email");
+    } catch (error) {
+      console.error("取得 Email 失敗：", error);
+      return null;
+    }
+  };
+
+  // Fetch chat records
+  const fetchChatRecords = async (userEmail: string, timestamp?: number) => {
+    try {
+      setIsLoading(true);
+      const data = await getChatRecords(userEmail, timestamp);
+      const contents = data?.content || [];
+
+      if (contents.length === 0) {
+        setMessagesContent((prev) =>
+          prev.length === 0
+            ? [
+              {
+                role: "bot",
+                message: "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
+              },
+            ]
+            : prev
+        );
+        setTimestamp(-1);
+        return;
+      }
+
+      const chatContents: ChatMessage[] = contents
+        .map((content: any) =>
+          content.chat_content.map((chat: any) => ({
+            role: chat.role,
+            message: chat.message,
+            timestamp: content.timestamp,
+          })).reverse()
+        )
+        .flat()
+        .reverse();
+
+      setTimestamp(contents[contents.length - 1].timestamp);
+      setMessagesContent((prev) => {
+        const newMessages = chatContents.filter(
+          (newMsg: ChatMessage) =>
+            !prev.some((existingMsg) => existingMsg.timestamp === newMsg.timestamp)
+        );
+        return [...prev, ...newMessages];
+      });
+    } catch (error) {
+      console.error("取得聊天紀錄失敗：", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchChatRecord = async (userEmail: string, timestamp?: number) => {
+    try {
+      setIsLoading(true);
+      const data = await getChatRecords(userEmail, timestamp);
+      const contents = data?.content || [];
+
+      if (contents.length === 0) {
+        setMessagesContent((prev) =>
+          prev.length === 0
+            ? [
+              {
+                role: "bot",
+                message: "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
+              },
+            ]
+            : prev
+        );
+        setTimestamp(-1);
+        return;
+      }
+
+      const chatContents: ChatMessage[] = contents
+        .map((content: any) =>
+          content.chat_content.map((chat: any) => ({
+            role: chat.role,
+            message: chat.message,
+            timestamp: content.timestamp,
+          })).reverse()
+        )
+        .flat()
+        .reverse();
+        
+
+      setTimestamp(contents[contents.length - 1].timestamp);
+      setMessagesContent((prev) => {
+        const newMessages = chatContents.filter(
+          (newMsg: ChatMessage) =>
+            !prev.some((existingMsg) => existingMsg.timestamp === newMsg.timestamp)
+        );
+        return [...newMessages,...prev];
+      });
+    } catch (error) {
+      console.error("取得聊天紀錄失敗：", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!userInput.trim()) return;
-
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-
-    setIsGenerating(true);
-    setUserInput("");
-    setMessagesContent((prev) =>
-      prev.concat({ role: "user", message: userInput })
-    );
-
-    const { response } = await chatWithBot("user_0", userInput);
-
-    setMessagesContent((prev) =>
-      prev.concat({ role: "bot", message: response })
-    );
-    setIsGenerating(false);
-  };
-
-  const loadMoreContent = async () => {
-    if (!timestamp) return;
-
-    setIsLoading(true);
-    const data = await handleGetChatRecords("user_0", timestamp);
-
-    if (data.content.length === 0) {
-      setIsLoading(false);
-      setTimestamp(-1);
-
+    if (!userInput.trim() || !email || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      console.error("Invalid input or WebSocket state");
       return;
     }
-
-    const chatContents = data.content
-      .map((content: any) =>
-        content.chat_content
-          .map((chat: any) => ({
-            role: chat.role,
-            message: chat.message,
-          }))
-          .reverse()
-      )
-      .flat();
-
-    const reversedChatContents = chatContents.reverse();
-
-    setTimestamp(data.content[data.content.length - 1].timestamp);
-    setMessagesContent((prev) => reversedChatContents.concat(prev));
-    setIsLoading(false);
+  
+    setIsGenerating(true);
+  
+    setMessagesContent((prev) => [
+      ...prev,
+      { role: "user", message: userInput },
+    ]);
+  
+    setUserInput(""); 
+  
+    try {
+      wsRef.current.send(
+        JSON.stringify({
+          email: email,
+          queryText: userInput,
+        })
+      );
+    } catch (error) {
+      console.error("Error while sending message:", error);
+    }
   };
+  
 
-  const handleGetChatRecords = async (userId: string, timestamp?: number) => {
-    const data = await getChatRecords(userId, timestamp);
 
-    return data;
-  };
-
+  // Handle quick reply
   const handleQuickReply = (message: string) => {
-    setMessagesContent([
-      ...messagesContent,
+    setMessagesContent((prev) => [
+      ...prev,
       { role: "user", message },
-      { role: "bot", message: `回應於：${message}` },
     ]);
   };
 
-  useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollIntoView({ behavior: "smooth" });
+
+  const loadMoreContent = () => {
+    if (email && timestamp !== -1 && timestamp !== undefined) {
+      fetchChatRecord(email, timestamp);
     }
+  };
+  
+  const navigate = useNavigate(); 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const userDataResponse = await getUserData();
 
-    if (messagesContent.length !== 0) return;
+        if (!userDataResponse || userDataResponse.status === 401) {
+          console.log("Unauthorized, redirecting to login.");
+          navigate("/login"); 
+          return; 
+        }
 
-    handleGetChatRecords("user_0").then((data) => {
-      const contents = data.content;
-
-      if (contents.length === 0) {
-        setMessagesContent([
-          {
-            role: "bot",
-            message: "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
-          },
-        ]);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        
       }
+    };
 
-      const chatContents = contents
-        .map((content: any) =>
-          content.chat_content
-            .map((chat: any) => ({
-              role: chat.role,
-              message: chat.message,
-            }))
-            .reverse()
-        )
-        .flat();
+    checkLoginStatus();
+  }, [navigate]);
 
-      setTimestamp(contents[contents.length - 1].timestamp);
-      setMessagesContent(chatContents.reverse());
-    });
-  }, []);
 
   useEffect(() => {
-    document.addEventListener("scroll", () => {
-      const moreContentBtn = document.getElementById("more-content");
+    const initializeWebSocket = async () => {
+      const userEmail = await fetchUserEmail();
+      if (userEmail) {
+        fetchChatRecords(userEmail);
+        console.log("Fetched user email:", userEmail);
+        const ws = new WebSocket("ws://localhost:8000"); 
+        wsRef.current = ws;
 
-      if (window.scrollY === 0) {
-        moreContentBtn?.classList.remove("pointer-events-none");
-        moreContentBtn?.classList.remove("!opacity-0");
-        moreContentBtn?.classList.add("opacity-100");
-      } else {
-        moreContentBtn?.classList.add("pointer-events-none");
-        moreContentBtn?.classList.remove("opacity-100");
-        moreContentBtn?.classList.add("!opacity-0");
+        ws.onopen = () => {
+          console.log("WebSocket connection established");
+        };
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.error) {
+            console.error("WebSocket error:", data.error);
+          } else if (data.response) {
+            setMessagesContent((prev) => [
+              ...prev,
+              { role: "bot", message: data.response },
+            ]);
+            setIsGenerating(false);
+          }
+        };
+
+        ws.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
+
+        ws.onclose = () => {
+          console.log("WebSocket connection closed");
+        };
       }
-    });
+    };
+
+    initializeWebSocket();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
   }, []);
+
 
   return (
     <DefaultLayout>
@@ -162,26 +269,20 @@ export default function ChatboxPage() {
           {messagesContent.map((messageContent, index) => (
             <div
               key={index}
-              className={`flex mb-6 gap-2 ${
-                messageContent.role === "user" && "flex-row-reverse"
-              }`}
+              className={`flex mb-6 gap-2 ${messageContent.role === "user" ? "flex-row-reverse" : ""
+                }`}
             >
               <Avatar
                 showFallback
-                classNames={{
-                  base: `${messageContent.role === "bot" && "bg-white"}`,
-                }}
+                classNames={{ base: messageContent.role === "bot" ? "bg-white" : "" }}
                 size="sm"
-                src={`${
-                  messageContent.role === "bot" && "/assets/FooDiary.png"
-                }`}
+                src={messageContent.role === "bot" ? "/assets/FooDiary.png" : ""}
               />
               <div
-                className={`p-3 rounded-lg max-w-xs ${
-                  messageContent.role === "bot"
+                className={`p-3 rounded-lg max-w-xs ${messageContent.role === "bot"
                     ? "bg-gray-300 text-black"
                     : "bg-blue-500 text-white"
-                }`}
+                  }`}
               >
                 <MarkdownDisplay content={messageContent.message} />
               </div>
@@ -190,11 +291,7 @@ export default function ChatboxPage() {
 
           {isGenerating && (
             <div className="flex mb-6 gap-2">
-              <Avatar
-                classNames={{ base: "bg-white" }}
-                size="sm"
-                src="/assets/FooDiary.png"
-              />
+              <Avatar classNames={{ base: "bg-white" }} size="sm" src="/assets/FooDiary.png" />
               <div className="w-full max-w-xs bg-gray-300 p-3 rounded-lg grid gap-2">
                 <Skeleton className="w-3/5 rounded-lg">
                   <div className="h-3 bg-secondary" />
@@ -236,7 +333,7 @@ export default function ChatboxPage() {
               size="lg"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              onKeyDown={onKeyDownHandler}
+              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             />
             <Button
               className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform"

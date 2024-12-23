@@ -1,0 +1,46 @@
+{
+  "hash": "b4163c63",
+  "configHash": "38ae7f0a",
+  "lockfileHash": "4a2374e9",
+  "browserHash": "7575bc3b",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/.pnpm/react@18.3.1/node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "18ba5cb8",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/.pnpm/react@18.3.1/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "f3a3d26b",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "23eb3a17",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/.pnpm/react-router-dom@6.23.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "0793de94",
+      "needsInterop": false
+    },
+    "@nextui-org/system": {
+      "src": "../../node_modules/.pnpm/@nextui-org+system@2.2.6_@nextui-org+theme@2.2.11_tailwindcss@3.4.3__framer-motion@11.1.9_rea_maw64qcjq54fe2tpocrjopwe74/node_modules/@nextui-org/system/dist/index.mjs",
+      "file": "@nextui-org_system.js",
+      "fileHash": "f6001e5a",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-7XA4PLQE": {
+      "file": "chunk-7XA4PLQE.js"
+    },
+    "chunk-BMKNQQUQ": {
+      "file": "chunk-BMKNQQUQ.js"
+    }
+  }
+}
