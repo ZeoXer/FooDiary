@@ -3,7 +3,7 @@
 // 新增用餐紀錄
 const addRecord = async (req, res) => {
     const userID = req.user.userID; 
-    const { whichMeal, mealTime, foodContent, calories } = req.body;
+    const { whichMeal, mealTime, foodContent, calories, suggestion } = req.body;
 
     try {
         if (!whichMeal || !mealTime || !foodContent || !calories) {
@@ -17,6 +17,7 @@ const addRecord = async (req, res) => {
             mealTime,
             foodContent,
             calories,
+            suggestion
         });
 
         await newRecord.save();

@@ -1,50 +1,55 @@
-﻿const { UserData, UserDataModel } = require('../../models/userdata');
-const moment = require('moment');
+﻿const { UserData } = require('../../models/userdata'); 
+const { User } = require('../../models/user'); // 引入 User 模型
 
 // 更新使用者資料
 const editUserData = async (req, res) => {
     const userID = req.user.userID; 
-    const { birthDate, height, weight, gender, exerciseFrequency } = req.body;
+    const { userName, email, age, height, weight, exerciseFrequency } = req.body; // 包括 age
 
     try {
-        const { error } = UserDataModel.validate({
-            birthDate,
-            height,
-            weight,
-            gender,
-            exerciseFrequency
-        });
-        if (error) {
-            return res.status(400).json({ message: `驗證錯誤: ${error.details[0].message}` });
-        }
-
         // 查找要更新的使用者資料
-        const userData = await UserData.findOne({ userID });
+        let userData = await UserData.findOne({ userID }); 
         if (!userData) {
             return res.status(404).json({ message: '找不到對應的使用者資料' });
         }
 
-        // 更新資料
-        userData.birthDate = moment(birthDate, 'YYYY-MM-DD', true).toISOString();
-        userData.height = height;
-        userData.weight = weight;
-        userData.gender = gender;
-        userData.exerciseFrequency = exerciseFrequency;
+        // 查找並更新使用者名稱和電子郵件
+        let user = await User.findById(userID);
+        if (!user) {
+            return res.status(404).json({ message: '找不到使用者' });
+        }
+        
+        if (userName) {
+            user.userName = userName; 
+        }
+        if (email) {
+            user.email = email; 
+        }
 
-        // 重新計算年齡和 BMR
-        userData.age = userData.calculateAge();
-        userData.bmr = userData.calculateBMR();
+        // 直接更新年齡
+        if (age !== undefined) {
+            userData.age = age; 
+        }
 
-        // 保存更新
+        // 更新其他資料
+        if (height) {
+            userData.height = height;
+        }
+        if (weight) {
+            userData.weight = weight;
+        }
+        if (exerciseFrequency) {  
+            userData.exerciseFrequency = exerciseFrequency;
+        }
+
         await userData.save();
+        await user.save(); 
 
         res.status(200).json({ message: '成功更新使用者資料', data: userData });
     } catch (err) {
-
         console.error('錯誤:', err);
         res.status(500).json({ message: '伺服器錯誤', error: err.message });
     }
 };
 
 module.exports = { editUserData };
-

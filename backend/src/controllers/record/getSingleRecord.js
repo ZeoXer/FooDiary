@@ -2,7 +2,7 @@
 
 // 獲取單筆飲食紀錄
 const getSingleRecord = async (req, res) => {
-    const userID = req.user.userID; 
+    const userID = req.user.userID;
     const { date } = req.query;
 
     try {
@@ -31,10 +31,15 @@ const getSingleRecord = async (req, res) => {
             return res.status(404).json({ message: '未找到該日期的用餐記錄' });
         }
 
+        
         const result = records.map(record => ({
             recordID: record._id,
             whichMeal: record.whichMeal,
-            calories: record.foodContent.reduce((sum, food) => sum + (food.calories || 0), 0), // 累加食物卡路里，處理可能的 null 或 undefined
+            foodDetails: record.foodContent.map(food => ({
+                foodName: food.foodName, 
+                weight: food.weightInGram, 
+                calories: food.calories 
+            }))
         }));
 
         return res.status(200).json(result);

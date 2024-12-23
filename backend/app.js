@@ -8,6 +8,8 @@ var WebSocket = require('ws');
 var { verifyToken } = require('./src/middlewares/verifyToken');
 var connectDB = require('./src/config/db');
 var { connectRedis } = require('./src/config/redis');
+var cors = require('cors');  // Add this line to import cors
+
 // var initializeDatabase = require('./src/database/initializeDatabase');
 
 var authRouter = require('./src/routes/auth');    
@@ -17,6 +19,9 @@ var chatRouter = require('./src/routes/chat');
 var healthyRouter = require('./src/routes/healthy'); 
 
 var app = express();
+
+// Middleware to enable CORS
+app.use(cors()); 
 
 connectDB();
 connectRedis();
