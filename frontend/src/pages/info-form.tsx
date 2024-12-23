@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { DatePicker } from "@nextui-org/react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { RadioGroup, Radio } from "@nextui-org/radio";
 import { DateValue, today, getLocalTimeZone } from "@internationalized/date";
 import { useNavigate } from "react-router-dom";
+import { getUserData} from "@/apis/user";
 
 import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
@@ -19,7 +20,27 @@ export default function InfoFormPage() {
   const [weight, setWeight] = useState("");
   const [biologicalSex, setBiologicalSex] = useState("male");
   const [exerciseFrequency, setExerciseFrequency] = useState("never");
+
   const navigate = useNavigate();
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const userDataResponse = await getUserData();
+
+
+        if (!userDataResponse || userDataResponse.status === 401) {
+          console.log("Unauthorized, redirecting to login.");
+          navigate("/login"); 
+          return; 
+        }
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate]);
 
   const handleSubmit = async () => {
     if (!birthDate || !height || !weight) {
@@ -32,7 +53,7 @@ export default function InfoFormPage() {
       weight: parseInt(weight),
       gender:
         informationMap.biologicalSex[
-          biologicalSex as keyof typeof informationMap.biologicalSex
+        biologicalSex as keyof typeof informationMap.biologicalSex
         ],
       exerciseFrequency: informationMap.exerciseFrequency[
         exerciseFrequency as keyof typeof informationMap.exerciseFrequency

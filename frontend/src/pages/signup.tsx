@@ -46,24 +46,31 @@ export default function SignupPage() {
 
   const handleSignup = async () => {
     if (!userName || !email || !password) {
+      alert("請填寫完整的註冊資料！");
       return;
     }
-
-    const response = await signup(userName, email, password);
-
-    if (response.message === "註冊成功") {
-      const response = await login(email, password);
-
-      if (response.message === "登入成功") {
-        setAuthToken(response.token);
-        navigate("/info-form");
-
-        return;
+  
+    try {
+      const response = await signup(userName, email, password);
+  
+      if (response.message === "註冊成功") {
+        const loginResponse = await login(email, password);
+  
+        if (loginResponse.message === "登入成功") {
+          setAuthToken(loginResponse.token);
+          navigate("/info-form");
+        } else {
+          alert(loginResponse.message || "登入失敗，請稍後再試");
+        }
+      } else {
+        alert(response.message || "註冊失敗，請稍後再試");
       }
+    } catch (error) {
+      console.error("Signup or Login error:", error);
+      alert("註冊或登入過程中出現錯誤，請稍後再試");
     }
-
-    alert(response.message);
   };
+  
 
   return (
     <DefaultLayout>

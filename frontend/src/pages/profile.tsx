@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import DefaultLayout from "@/layouts/default";
-import { getUserData } from "@/apis/user";
-import { informationMap } from "@/config/site";
+import { getUserData, editUserData } from "@/apis/user";
+// import { informationMap } from "@/config/site";
 import { UserIcon } from "@/components/icons";
+import { useNavigate } from "react-router-dom";
 
 // 定義 UserInfo 的型別，讓 avatar 支援 string | null
 type UserInfo = {
@@ -12,88 +13,119 @@ type UserInfo = {
   age: number;
   height: number;
   weight: number;
-  exerciseFrequency: string;
+  exerciseFrequency: number;
   bmr: number;
 };
 
 export default function ProfilePage() {
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    name: "User",
-    email: "xxxxx@xxx.xx",
-    age: 0,
-    height: 0,
-    weight: 0,
-    exerciseFrequency: "0",
-    bmr: 0,
-  });
-
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null); 
   const [isEditing, setIsEditing] = useState(false);
-  const [editInfo, setEditInfo] = useState<UserInfo>({ ...userInfo });
+  const [editInfo, setEditInfo] = useState<UserInfo | null>(null); 
+  const navigate = useNavigate(); 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const userDataResponse = await getUserData();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+        if (!userDataResponse || userDataResponse.status === 401) {
+          console.log("Unauthorized, redirecting to login.");
+          navigate("/login"); 
+          return; 
+        }
+
+        setUserInfo(userDataResponse.userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigate]);
 
   // 處理輸入變更
   const handleInputChange = (field: keyof UserInfo, value: string | number) => {
-    setEditInfo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    if (field === 'exerciseFrequency' && typeof value === 'string') {
+      value = Number(value);
+    }
+    setEditInfo((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          [field]: value,
+        };
+      }
+      return {
+        name: "",
+        email: "",
+        age: 0,
+        height: 0,
+        weight: 0,
+        exerciseFrequency: 0,
+        bmr: 0,
+      };
+    });
   };
 
-  // 處理頭像變更
-  // const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-
-  //   if (file) {
-  //     const reader = new FileReader();
-
-  //     reader.onloadend = () => {
-  //       setEditInfo((prev) => ({
-  //         ...prev,
-  //         avatar: reader.result as string, // 將圖片以 Base64 格式存入
-  //       }));
-  //     };
-  //     reader.readAsDataURL(file); // 讀取檔案
-  //   }
-  // };
 
   // 保存變更
-  const handleSave = () => {
-    setUserInfo({ ...editInfo });
-    setIsEditing(false); // 結束編輯模式
+  const handleSave = async () => {
+    if (editInfo) {
+      try {
+        const result = await editUserData({
+          userName: editInfo.name,
+          birthDate: new Date().toISOString(),
+          height: editInfo.height,
+          weight: editInfo.weight,
+          gender: 1,
+          exerciseFrequency: editInfo.exerciseFrequency,
+        });
+  
+        if (result) {
+          setUserInfo({ ...editInfo }); 
+          setIsEditing(false); 
+        } else {
+          alert("更新資料失敗，請稍後再試。");
+        }
+      } catch (error) {
+        console.error("更新資料錯誤:", error);
+        alert("伺服器錯誤，請稍後再試。"); 
+      }
+    }
   };
 
   // 取消編輯
   const handleCancel = () => {
-    setEditInfo({ ...userInfo }); // 恢復原本的資料
-    setIsEditing(false); // 結束編輯模式
+    setEditInfo({ ...userInfo! }); 
+    setIsEditing(false); 
   };
 
-  // const handleAvatarClick = () => {
-  //   fileInputRef.current?.click(); // 模擬點擊檔案上傳按鈕
-  // };
-
+  // 取得使用者資料
   const handleGetUserData = async () => {
+
     const { message, userData } = await getUserData();
 
     if (message === "成功取得使用者資料") {
-      setUserInfo({
-        name: "User",
+      const userDataFetched: UserInfo = {
+        name: userData.userID.userName,
         email: userData.userID.email,
         age: userData.age,
         height: userData.height,
         weight: userData.weight,
-        exerciseFrequency: informationMap.exerciseFrequency[
-          userData.exerciseFrequency as keyof typeof informationMap.exerciseFrequency
-        ] as string,
+        exerciseFrequency: userData.exerciseFrequency,
         bmr: userData.bmr,
-      });
+      };
+      setUserInfo(userDataFetched); 
+      setEditInfo(userDataFetched); 
     }
   };
 
   useEffect(() => {
     handleGetUserData();
   }, []);
+
+  if (!userInfo || !editInfo) {
+    return <div>Loading...</div>; 
+  }
 
   return (
     <div>
@@ -133,15 +165,13 @@ export default function ProfilePage() {
               /> */}
               {!isEditing ? (
                 <>
-                  <h2 className="text-lg font-semibold mt-4">
-                    {userInfo.name}
-                  </h2>
+                  <h2 className="text-lg font-semibold mt-4">{userInfo.name}</h2>
                   <p className="text-sm text-gray-500">{userInfo.email}</p>
                   <button
                     className="px-4 py-1 mt-2 bg-gray-200 text-gray-600 rounded-full text-sm hover:bg-gray-300"
                     onClick={() => setIsEditing(true)}
                   >
-                    Edit Profile
+                    編輯資料
                   </button>
                 </>
               ) : (
@@ -161,13 +191,13 @@ export default function ProfilePage() {
                       className="px-4 py-1 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-600"
                       onClick={handleSave}
                     >
-                      Save
+                      儲存
                     </button>
                     <button
                       className="px-4 py-1 bg-gray-200 text-gray-600 rounded-full text-sm hover:bg-gray-300"
                       onClick={handleCancel}
                     >
-                      Cancel
+                      取消
                     </button>
                   </div>
                 </>
@@ -179,7 +209,7 @@ export default function ProfilePage() {
               {isEditing ? (
                 <>
                   <div className="flex justify-between text-sm">
-                    <span>Age</span>
+                    <span>年齡</span>
                     <input
                       className="w-24 p-1 border rounded"
                       type="number"
@@ -190,7 +220,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Height</span>
+                    <span>身高</span>
                     <input
                       className="w-24 p-1 border rounded"
                       type="number"
@@ -201,7 +231,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Weight</span>
+                    <span>體重</span>
                     <input
                       className="w-24 p-1 border rounded"
                       type="number"
@@ -212,7 +242,7 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Exercise Frequency</span>
+                    <span>運動頻率</span>
                     <input
                       className="w-24 p-1 border rounded"
                       type="number"
@@ -229,32 +259,20 @@ export default function ProfilePage() {
               ) : (
                 <>
                   <div className="flex justify-between text-sm">
-                    <span>Age</span>
-                    <span>
-                      {userInfo.age}{" "}
-                      <span className="text-gray-500">years old</span>
-                    </span>
+                    <span>年齡</span>
+                    <span>{userInfo.age} 歲</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Height</span>
-                    <span>
-                      {userInfo.height}{" "}
-                      <span className="text-gray-500">cm</span>
-                    </span>
+                    <span>身高</span>
+                    <span>{userInfo.height} cm</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Weight</span>
-                    <span>
-                      {userInfo.weight}{" "}
-                      <span className="text-gray-500">kg</span>
-                    </span>
+                    <span>體重</span>
+                    <span>{userInfo.weight} kg</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Exercise Frequency</span>
-                    <span>
-                      {userInfo.exerciseFrequency}{" "}
-                      <span className="text-gray-500">per week</span>
-                    </span>
+                    <span>運動頻率</span>
+                    <span>{userInfo.exerciseFrequency} 天 / 每週</span>
                   </div>
                 </>
               )}
@@ -262,7 +280,7 @@ export default function ProfilePage() {
             <hr className="border-gray-300 mt-6 mb-4" />
             {/* BMR 計算結果 */}
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">Estimated BMR</h3>
+              <h3 className="text-lg font-semibold mb-2">預估 BMR</h3>
               <p className="text-4xl font-bold">{userInfo.bmr}</p>
             </div>
           </div>

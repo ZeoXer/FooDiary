@@ -13,10 +13,13 @@ export const signup = async (
     });
 
     return response.data;
-  } catch (error) {
-    console.error("Error signing up:", error);
+  } catch (error: any) {
+    console.error("Error logging in:", error);
 
-    return null;
+    if (error.response) {
+      return error.response.data; 
+    }
+    return { message: '登入過程中發生錯誤，請稍後再試' };
   }
 };
 
@@ -28,9 +31,12 @@ export const login = async (email: string, password: string) => {
     });
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error logging in:", error);
 
-    return null;
+    if (error.response) {
+      return error.response.data; 
+    }
+    return { message: '登入過程中發生錯誤，請稍後再試' };
   }
 };

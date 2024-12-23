@@ -7,4 +7,5 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
 export type ChatMessage = {
   role: "bot" | "user";
   message: string;
+  timestamp?: number;
 };

@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
@@ -39,14 +40,17 @@
     "clsx": "2.1.1",
     "framer-motion": "~11.5.6",
     "js-cookie": "^3.0.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "next-transpile-modules": "^10.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "6.23.0",
+    "react-toastify": "^11.0.2",
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.0",
     "tailwind-variants": "0.1.20",
-    "tailwindcss": "3.4.3"
+    "tailwindcss": "3.4.3",
+    "vite-template": "file:"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
@@ -67,8 +71,12 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "^3.2.0",
     "postcss": "^8.4.38",
+    "react-error-overlay": "6.0.9",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-tsconfig-paths": "^4.3.2"
+  },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
   }
 }
