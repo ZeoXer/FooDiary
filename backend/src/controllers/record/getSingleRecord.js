@@ -18,8 +18,8 @@ const getSingleRecord = async (req, res) => {
         }
 
         // 定義當日的時間範圍
-        const startOfDay = new Date(queryDate.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(queryDate.setHours(23, 59, 59, 999));
+        const startOfDay = new Date(queryDate.setHours(8, 0, 0, 0));
+        const endOfDay = new Date(queryDate.setHours(31, 59, 59, 999));
 
         // 查詢當日的用餐紀錄
         const records = await Record.find({

@@ -83,11 +83,6 @@ export default function InfoFormPage() {
           <div className="grid gap-6 max-w-lg w-full">
             {/* 日期選擇器 */}
             <div>
-              <DatePicker showMonthAndYearPickers label="出生日期" />
-            </div>
-            {/* 身高和體重 */}
-            <Input label="身高 (cm)" size="lg" type="number" />
-            <Input label="體重 (kg)" size="lg" type="number" />
               <DatePicker
                 showMonthAndYearPickers
                 label="出生日期"
@@ -147,8 +142,6 @@ export default function InfoFormPage() {
             </div>
           </div>
         </div>
-        <span>{biologicalSex}</span>
-        <span>{exerciseFrequency}</span>
       </section>
     </DefaultLayout>
   );

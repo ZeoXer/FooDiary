@@ -72,7 +72,6 @@ export default function LoginPage() {
           <h1 className={title()}>使用者登入</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
-          <Input label="信箱" size="lg" type="email" />
           <Input
             errorMessage="信箱格式不正確"
             isInvalid={isEmailInvalid}

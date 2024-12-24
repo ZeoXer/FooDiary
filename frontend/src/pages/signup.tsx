@@ -79,8 +79,6 @@ export default function SignupPage() {
           <h1 className={title()}>成為新用戶</h1>
         </div>
         <div className="grid gap-4 max-w-lg w-full">
-          <Input label="使用者名稱" size="lg" />
-          <Input label="信箱" size="lg" type="email" />
           <Input
             errorMessage="使用者名稱為必填"
             isInvalid={userName === ""}

@@ -1,4 +1,3 @@
-import { useState, useRef } from "react";
 import { useState, useEffect } from "react";
 
 import DefaultLayout from "@/layouts/default";
@@ -19,29 +18,8 @@ type UserInfo = {
 };
 
 export default function ProfilePage() {
-  const [userInfo, setUserInfo] = useState<UserInfo>({
-    name: "User",
-    email: "XXXXXXX@nccu.edu.tw",
-    age: 24,
-    height: 168,
-    weight: 74,
-    exerciseFrequency: 5,
-    avatar: null, // 頭像初始值
-  });
-
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null); 
   const [isEditing, setIsEditing] = useState(false);
-  const [editInfo, setEditInfo] = useState<UserInfo>({ ...userInfo });
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // 計算 BMR
-  const calculateBMR = () => {
-    return Math.round(
-      10 * userInfo.weight + 6.25 * userInfo.height - 5 * userInfo.age + 5
-    );
-  };
-
   const [editInfo, setEditInfo] = useState<UserInfo | null>(null); 
   const navigate = useNavigate(); 
   useEffect(() => {
@@ -117,14 +95,6 @@ export default function ProfilePage() {
 
   // 取消編輯
   const handleCancel = () => {
-    setEditInfo({ ...userInfo }); // 恢復原本的資料
-    setIsEditing(false); // 結束編輯模式
-  };
-
-  const handleAvatarClick = () => {
-    fileInputRef.current?.click(); // 模擬點擊檔案上傳按鈕
-  };
-
     setEditInfo({ ...userInfo! }); 
     setIsEditing(false); 
   };
@@ -164,8 +134,6 @@ export default function ProfilePage() {
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow">
             {/* 用戶資訊 */}
             <div className="flex flex-col items-center mb-6">
-              {/* 點擊頭像觸發檔案上傳 */}
-              <div
               {/* <div
                 className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer relative group"
                 onClick={handleAvatarClick}
