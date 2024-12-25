@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 import DefaultLayout from "@/layouts/default";
 import { getUserData, editUserData } from "@/apis/user";
-// import { informationMap } from "@/config/site";
 import { UserIcon } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -22,6 +21,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editInfo, setEditInfo] = useState<UserInfo | null>(null); 
   const navigate = useNavigate(); 
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -41,6 +41,18 @@ export default function ProfilePage() {
 
     checkLoginStatus();
   }, [navigate]);
+
+  // 驗證使用者名稱是否符合要求：只能包含中文或英文字符
+  const validateName = (name: string) => {
+    const regex = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+    return regex.test(name);
+  };
+
+  // 驗證 email 格式
+  const validateEmail = (email: string) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  };
 
   // 處理輸入變更
   const handleInputChange = (field: keyof UserInfo, value: string | number) => {
@@ -66,10 +78,19 @@ export default function ProfilePage() {
     });
   };
 
-
   // 保存變更
   const handleSave = async () => {
     if (editInfo) {
+      // 檢查使用者名稱和 email 是否符合格式
+      if (!validateName(editInfo.name)) {
+        alert("使用者名稱只能包含中文或英文字符！");
+        return;
+      }
+      if (!validateEmail(editInfo.email)) {
+        alert("請輸入有效的 email 地址！");
+        return;
+      }
+
       try {
         const result = await editUserData({
           userName: editInfo.name,
@@ -101,7 +122,6 @@ export default function ProfilePage() {
 
   // 取得使用者資料
   const handleGetUserData = async () => {
-
     const { message, userData } = await getUserData();
 
     if (message === "成功取得使用者資料") {
@@ -134,35 +154,9 @@ export default function ProfilePage() {
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow">
             {/* 用戶資訊 */}
             <div className="flex flex-col items-center mb-6">
-              {/* <div
-                className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer relative group"
-                onClick={handleAvatarClick}
-              >
-                {editInfo.avatar ? (
-                  <img
-                    alt="User Avatar"
-                    className="w-full h-full object-cover"
-                    src={editInfo.avatar}
-                  />
-                ) : (
-                  <UserIcon />
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-white text-sm text-center">
-                    Change Avatar
-                  </span>
-                </div>
-              </div> */}
               <div className="w-20 h-20 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer relative group">
                 <UserIcon />
               </div>
-              {/* <input
-                ref={fileInputRef}
-                accept="image/*"
-                className="hidden"
-                type="file"
-                onChange={handleAvatarChange}
-              /> */}
               {!isEditing ? (
                 <>
                   <h2 className="text-lg font-semibold mt-4">{userInfo.name}</h2>

@@ -178,23 +178,37 @@ export default function MealDetailPage() {
 
     const handleSave = async () => {
       try {
+        // 檢查食物名稱是否含有非中文或非英文字符
+        const isValidFoodName = (name: any) => /^[a-zA-Z\u4e00-\u9fa5]+$/.test(name);
+    
+        // 檢查所有食物名稱
+        for (const entry of foodEntries) {
+          if (!isValidFoodName(entry.name)) {
+            alert(`食物名稱 "${entry.name}" 含有無效字符。只能包含中文和英文。`);
+            return;
+          }
+        }
+    
         const singleMealRecord = await getSingleMealRecord({ date: apiDate });
-
+        console.log(apiDate);
+    
         if (singleMealRecord?.length > 0) {
           const filteredRecords = singleMealRecord.filter((record: any) => record.whichMeal === mealType);
-
+    
           if (filteredRecords.length > 0) {
             const recordID = filteredRecords[0].recordID;
             console.log(recordID);
-
+    
             const updatedFoodContent = foodEntries.map((entry) => ({
               foodName: entry.name,
               weightInGram: entry.weight ? parseInt(entry.weight) : 0,
               calories: entry.calories ? parseInt(entry.calories) : 0,
             }));
-
+            console.log(updatedFoodContent);
+    
             const response = await editMealRecord({ recordID, foodContent: updatedFoodContent });
-
+            console.log(response);
+    
             if (response?.success) {
               alert("餐點紀錄已更新");
               setIsEditing(false);
@@ -212,6 +226,9 @@ export default function MealDetailPage() {
         console.error("更新餐點紀錄時出錯:", error);
       }
     };
+    
+
+    
 
     return (
       <DefaultLayout>

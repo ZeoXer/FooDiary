@@ -78,13 +78,35 @@ export default function FoodRecordPage() {
   const apiDate = new Date().toLocaleDateString("zh-TW");
 
   const handleGenerateRecommendation = async () => {
-    if (foodEntries.some((entry) => !entry.name.trim())) {
-      alert("請確認所有食物條目已填寫名稱！");
-      return;
-    }
+  // 驗證卡路里是否為有效正數且不能包含特殊字符
+  const invalidCalories = foodEntries.some((entry) => 
+    !entry.calories.trim() || isNaN(parseFloat(entry.calories.trim())) || parseFloat(entry.calories.trim()) <= 0 || /[^0-9.]/.test(entry.calories.trim())
+  );
+  if (invalidCalories) {
+    alert("請確認所有食物條目已填寫有效的卡路里數字（卡路里應為正數，且不能包含特殊字符）！");
+    return;
+  }
+
+  // 驗證食物重量是否為有效正數且不能包含特殊字符
+  const invalidWeight = foodEntries.some((entry) => 
+    !entry.weight.trim() || isNaN(parseFloat(entry.weight.trim())) || parseFloat(entry.weight.trim()) <= 0 || /[^0-9.]/.test(entry.weight.trim())
+  );
+  if (invalidWeight) {
+    alert("請確認所有食物條目已填寫有效的食物重量數字（重量應為正數，且不能包含特殊字符）！");
+    return;
+  }
+
+  // 驗證食物名稱是否為有效字串，只允許字母、數字和空格，不能有特殊符號
+  const invalidName = foodEntries.some((entry) => 
+    !entry.name.trim() || /[^a-zA-Z0-9\s\u4e00-\u9fa5]/.test(entry.name.trim())
+  );
+  if (invalidName) {
+    alert("請確認所有食物條目已填寫有效的名稱（名稱應僅包含字母、數字、空格或中文，且不能有特殊字符）！");
+    return;
+  }
   
     let records = await getSingleMealRecord({ date: apiDate }); 
-
+  
     if (records.message === "未找到該日期的用餐記錄") {
       records = [];
     }
@@ -122,62 +144,84 @@ export default function FoodRecordPage() {
   };
   
   
-    const handleSubmitResults = async () => {
-      if (foodEntries.some((entry) => !entry.name.trim())) {
-        alert("請確認所有食物條目已填寫名稱！");
-        return;
-      }
-    
-      let records = await getSingleMealRecord({ date: apiDate }); 
+  
+const handleSubmitResults = async () => {
+  let records = await getSingleMealRecord({ date: apiDate });
 
-      if (records.message === "未找到該日期的用餐記錄") {
-        records = [];
-      }
-    
-      const existingMeal = (records || []).filter((record: any) => record.whichMeal === mealType);
-    
-      if (existingMeal.length > 0) {
-        alert(`${mealType} 記錄已存在。`);
-        return;
-      }
-      
-      if (foodEntries.some((entry) => !entry.name.trim())) {
-        alert("請確認所有食物條目已填寫名稱！");
-        return;
-      }
+  if (records.message === "未找到該日期的用餐記錄") {
+    records = [];
+  }
 
-      const now = new Date();
-      const formattedMealTime = now.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-"); 
+  const existingMeal = (records || []).filter((record: any) => record.whichMeal === mealType);
 
-      const mealData = {
-        mealTime: formattedMealTime,
-        whichMeal: mealType,
-        foodContent: foodEntries.map((entry) => ({
-          foodName: entry.name,
-          weightInGram: parseFloat(entry.weight) || 0,
-          calories: parseFloat(entry.calories) || 0,
-        })),
-        calories: foodEntries.reduce((total, entry) => {
-          const entryCalories = parseFloat(entry.calories);
-          return total + (isNaN(entryCalories) ? 0 : entryCalories);
-        }, 0),
-        suggestion: recommendation,
-      };
+  if (existingMeal.length > 0) {
+    alert(`${mealType} 記錄已存在。`);
+    return;
+  }
 
-      try {
-        const result = await addMealRecord(mealData);
-        if (result) {
-          alert("紀錄成功！");
-          setFoodEntries([{ name: "", weight: "", calories: "" }]);
-          setRecommendation(""); 
-        } else {
-          throw new Error("紀錄失敗");
-        }
-      } catch (error) {
-        console.error("Error submitting meal record:", error);
-        alert("提交失敗，請稍後再試");
-      }
-    };
+  // 驗證卡路里是否為有效正數且不能包含特殊字符
+  const invalidCalories = foodEntries.some((entry) => 
+    !entry.calories.trim() || isNaN(parseFloat(entry.calories.trim())) || parseFloat(entry.calories.trim()) <= 0 || /[^0-9.]/.test(entry.calories.trim())
+  );
+  if (invalidCalories) {
+    alert("請確認所有食物條目已填寫有效的卡路里數字（卡路里應為正數，且不能包含特殊字符）！");
+    return;
+  }
+
+  // 驗證食物重量是否為有效正數且不能包含特殊字符
+  const invalidWeight = foodEntries.some((entry) => 
+    !entry.weight.trim() || isNaN(parseFloat(entry.weight.trim())) || parseFloat(entry.weight.trim()) <= 0 || /[^0-9.]/.test(entry.weight.trim())
+  );
+  if (invalidWeight) {
+    alert("請確認所有食物條目已填寫有效的食物重量數字（重量應為正數，且不能包含特殊字符）！");
+    return;
+  }
+
+  // 驗證食物名稱是否為有效字串，只允許字母、數字和空格，不能有特殊符號
+  const invalidName = foodEntries.some((entry) => 
+    !entry.name.trim() || /[^a-zA-Z0-9\s\u4e00-\u9fa5]/.test(entry.name.trim())
+  );
+  if (invalidName) {
+    alert("請確認所有食物條目已填寫有效的名稱（名稱應僅包含字母、數字、空格或中文，且不能有特殊字符）！");
+    return;
+  }
+
+  const now = new Date();
+  const formattedMealTime = now.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-");
+
+  const mealData = {
+    mealTime: formattedMealTime,
+    whichMeal: mealType,
+    foodContent: foodEntries.map((entry) => ({
+      foodName: entry.name,
+      weightInGram: parseFloat(entry.weight) || 0,
+      calories: parseFloat(entry.calories) || 0,
+    })),
+    calories: foodEntries.reduce((total, entry) => {
+      const entryCalories = parseFloat(entry.calories);
+      return total + (isNaN(entryCalories) ? 0 : entryCalories);
+    }, 0),
+    suggestion: recommendation,
+  };
+
+  try {
+    const result = await addMealRecord(mealData);
+    if (result) {
+      alert("紀錄成功！");
+      setFoodEntries([{ name: "", weight: "", calories: "" }]);
+      setRecommendation("");
+    } else {
+      throw new Error("紀錄失敗");
+    }
+  } catch (error) {
+    console.error("Error submitting meal record:", error);
+    alert("提交失敗，請稍後再試");
+  }
+};
+
+  
+  
+  
 
     return (
       <DefaultLayout>
