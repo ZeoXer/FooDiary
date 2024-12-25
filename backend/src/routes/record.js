@@ -19,7 +19,7 @@ router.get('/getSingleRecord', getSingleRecord);
 router.get('/getRecord', getRecord); 
 
 // 編輯飲食紀錄
-router.post('/editRecord', editRecord); 
+router.put('/editRecord', editRecord); 
 
 // 刪除飲食紀錄
 router.delete('/deleteRecord', deleteRecord); 

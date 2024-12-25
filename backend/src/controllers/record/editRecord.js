@@ -3,6 +3,7 @@
 // 編輯飲食紀錄
 const editRecord = async (req, res) => {
     const { recordID, foodContent } = req.body;
+    console.log(recordID, foodContent);
 
     try {
         const record = await Record.findById(recordID);

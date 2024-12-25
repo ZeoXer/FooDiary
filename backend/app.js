@@ -24,7 +24,7 @@ var app = express();
 app.use(cors()); 
 
 connectDB();
-connectRedis();
+// connectRedis();
 
 // initializeDatabase()
 
