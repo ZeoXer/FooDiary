@@ -62,18 +62,32 @@ export default function DashboardPage() {
           setMeals(cached.meals);
           setWeeklyCalories(cached.weeklyCalories);
         }
-  
+
         // 更新當日餐點資料
-        const mealRecords = await getMealRecord({ date: new Date().toISOString().split("T")[0] });
+        let apidate = new Date().toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-")
+        const mealRecords = await getMealRecord({ date: apidate });
   
+        if (!mealRecords || mealRecords.message === "未找到該日期的用餐記錄") {
+          console.log(`No meal records found for ${apidate}`);
+          return;
+        }
         const dailyMeals = { Breakfast: 0, Lunch: 0, Dinner: 0, Other: 0 };
-        mealRecords?.forEach((mealRecord: MealRecord) => {
-          const { whichMeal, calories } = mealRecord;
-          if (whichMeal === "Breakfast") dailyMeals.Breakfast = calories;
-          if (whichMeal === "Lunch") dailyMeals.Lunch = calories;
-          if (whichMeal === "Dinner") dailyMeals.Dinner = calories;
-          if (whichMeal === "Other") dailyMeals.Other = calories;
-        });
+        if (mealRecords && Array.isArray(mealRecords)) {
+          mealRecords.forEach((mealRecord: MealRecord) => {
+            const { whichMeal, calories } = mealRecord;
+            if (whichMeal === "Breakfast") dailyMeals.Breakfast = calories;
+            if (whichMeal === "Lunch") dailyMeals.Lunch = calories;
+            if (whichMeal === "Dinner") dailyMeals.Dinner = calories;
+            if (whichMeal === "Other") dailyMeals.Other = calories;
+          });
+        } else {
+          console.log("mealRecords is not an array or is undefined.");
+          dailyMeals.Breakfast = 0;
+          dailyMeals.Lunch = 0;
+          dailyMeals.Dinner = 0;
+          dailyMeals.Other = 0;
+        }
+        
   
         setMeals([ 
           { meal: "Breakfast", calories: dailyMeals.Breakfast },
@@ -92,7 +106,7 @@ export default function DashboardPage() {
             for (let i = 0; i < 7; i++) {
               const date = new Date(startOfWeek);
               date.setDate(date.getDate() + i);
-              const formattedDate = date.toISOString().split("T")[0];
+              const formattedDate = date.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-");
               try {
                 const mealRecord = await getMealRecord({ date: formattedDate });
                 const totalCalories = mealRecord?.reduce(

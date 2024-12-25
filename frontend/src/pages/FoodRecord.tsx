@@ -44,11 +44,13 @@ export default function FoodRecordPage() {
 
   useEffect(() => {
     const now = new Date();
-    const formattedTime = now.toLocaleTimeString([], {
+    const formattedTime = now.toLocaleString("zh-TW", {
+      timeZone: "Asia/Taipei",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: true,
     });
-    const formattedDate = now.toISOString().split("T")[0]; 
+    const formattedDate = now.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-");
     setCurrentTime(formattedTime);
     setCurrentDate(formattedDate);
   }, []);
@@ -73,7 +75,7 @@ export default function FoodRecordPage() {
     setFoodEntries((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const apiDate = new Date().toLocaleDateString("en-CA");
+  const apiDate = new Date().toLocaleDateString("zh-TW");
 
   const handleGenerateRecommendation = async () => {
     if (foodEntries.some((entry) => !entry.name.trim())) {
@@ -81,7 +83,11 @@ export default function FoodRecordPage() {
       return;
     }
   
-    const records = await getSingleMealRecord({ date: apiDate }); 
+    let records = await getSingleMealRecord({ date: apiDate }); 
+
+    if (records.message === "未找到該日期的用餐記錄") {
+      records = [];
+    }
   
     const existingMeal = (records || []).filter((record: any) => record.whichMeal === mealType);
   
@@ -122,7 +128,11 @@ export default function FoodRecordPage() {
         return;
       }
     
-      const records = await getSingleMealRecord({ date: apiDate }); 
+      let records = await getSingleMealRecord({ date: apiDate }); 
+
+      if (records.message === "未找到該日期的用餐記錄") {
+        records = [];
+      }
     
       const existingMeal = (records || []).filter((record: any) => record.whichMeal === mealType);
     
@@ -137,8 +147,7 @@ export default function FoodRecordPage() {
       }
 
       const now = new Date();
-      const taiwanTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Taipei" }));
-      const formattedMealTime = taiwanTime.toISOString(); 
+      const formattedMealTime = now.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-"); 
 
       const mealData = {
         mealTime: formattedMealTime,

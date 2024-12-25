@@ -63,19 +63,24 @@ export const getCalories = async (data: {
 };
 
 // 獲取飲食紀錄
-export const getMealRecord = async (data: {
-  date: string; 
-}) => {
+export const getMealRecord = async (data: { date: string }) => {
   try {
     const response = await Axios.get("/api/record/getRecord", {
       params: data,
     });
-    return response.data;
+
+    if (response.data?.message) {
+      console.error(`Error: ${response.data.message}`);
+      return { message: "無法取得用餐紀錄，請稍後再試" };
+    }
+
+    return response.data || [];  
   } catch (error) {
     console.error("Error fetching meal record:", error);
-    return null;
+    return { message: "無法取得用餐紀錄，請稍後再試" };  
   }
 };
+
 
 
 // 獲取單日飲食紀錄

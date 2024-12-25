@@ -58,7 +58,7 @@ export default function MealDetailPage() {
     checkLoginStatus();
   }, [navigate]);
 
-    const todayDate = new Date().toLocaleString("en-US", {
+    const todayDate = new Date().toLocaleString("zh-TW", {
       timeZone: "Asia/Taipei",
       year: "numeric",
       month: "short",
@@ -68,7 +68,7 @@ export default function MealDetailPage() {
       hour12: true,
     });
 
-    const apiDate = new Date().toLocaleDateString("en-CA");
+    const apiDate = new Date().toLocaleDateString("zh-TW");
 
     const [mealDetails, setMealDetails] = useState({
       meal: mealType,
