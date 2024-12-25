@@ -28,7 +28,7 @@ const getSingleRecord = async (req, res) => {
         }).select('_id whichMeal foodContent'); 
 
         if (records.length === 0) {
-            return res.status(404).json({ message: '未找到該日期的用餐記錄' });
+            return res.status(200).json({ message: '未找到該日期的用餐記錄' });
         }
 
         
