@@ -39,7 +39,7 @@ export default function IndexPage() {
             Log In
           </Link>
           <Link
-            href="/register"
+            href="/signup"
             className={buttonStyles({
               color: "secondary",
               radius: "full",
