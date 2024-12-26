@@ -10,53 +10,60 @@ import { HorizontalDotsIcon } from "@/components/icons";
 import { getUserData } from "@/apis/user";
 
 interface MealRecord {
-  whichMeal: "Breakfast" | "Lunch" | "Dinner" | "Other"; 
+  whichMeal: "Breakfast" | "Lunch" | "Dinner" | "Other";
   calories: number;
 }
 
 export default function DashboardPage() {
-  const [BMR, setBMR] = useState<number>(0); 
-  const [selectedDay, setSelectedDay] = useState("Sun."); 
-  const [currentWeek, setCurrentWeek] = useState(0); 
-  const [weeklyCalories, setWeeklyCalories] = useState<Array<Array<{ day: string; totalCalories: number }>>>([]); 
-  const [loading, setLoading] = useState(true); 
+  const [BMR, setBMR] = useState<number>(0);
+  const [selectedDay, setSelectedDay] = useState("Sun.");
+  const [currentWeek, setCurrentWeek] = useState(0);
+  const [weeklyCalories, setWeeklyCalories] = useState<
+    Array<Array<{ day: string; totalCalories: number }>>
+  >([]);
+  const [loading, setLoading] = useState(true);
   const [meals, setMeals] = useState([
     { meal: "Breakfast", calories: 0 },
     { meal: "Lunch", calories: 0 },
     { meal: "Dinner", calories: 0 },
     { meal: "Other", calories: 0 },
   ]);
-  const [calorieData, setCalorieData] = useState<Array<{ day: string; totalCalories: number }>>([]); 
-  const navigate = useNavigate(); 
+  const [calorieData, setCalorieData] = useState<
+    Array<{ day: string; totalCalories: number }>
+  >([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserDataAndMeals = async () => {
       setLoading(true);
       try {
         const userDataResponse = await getUserData();
-  
+
         if (!userDataResponse || userDataResponse.status === 401) {
           console.log("Unauthorized, redirecting to login.");
-          navigate("/login"); 
+          navigate("/login");
           return;
         }
-  
+
         if (userDataResponse.userData?.bmr) {
           setBMR(userDataResponse.userData.bmr);
         }
-  
-        const userEmail = userDataResponse.userData?.userID.email; 
-        const cacheKey = `user_${userEmail}_weeklyData`; 
-        const cacheTimestampKey = `${cacheKey}_timestamp`; 
-        const cacheExpirationTime = 1000 * 60 * 60; 
-  
+
+        const userEmail = userDataResponse.userData?.userID.email;
+        const cacheKey = `user_${userEmail}_weeklyData`;
+        const cacheTimestampKey = `${cacheKey}_timestamp`;
+        const cacheExpirationTime = 1000 * 60 * 60;
+
         sessionStorage.setItem("currentUserEmail", userEmail);
-  
+
         // 載入暫存資料 (如果有)
         const cachedData = sessionStorage.getItem(cacheKey);
         const cacheTimestamp = sessionStorage.getItem(cacheTimestampKey);
-        const isCacheValid = cachedData && cacheTimestamp && Date.now() - parseInt(cacheTimestamp) < cacheExpirationTime;
-  
+        const isCacheValid =
+          cachedData &&
+          cacheTimestamp &&
+          Date.now() - parseInt(cacheTimestamp) < cacheExpirationTime;
+
         if (cachedData && isCacheValid) {
           const cached = JSON.parse(cachedData);
           setMeals(cached.meals);
@@ -64,9 +71,15 @@ export default function DashboardPage() {
         }
 
         // 更新當日餐點資料
-        let apidate = new Date().toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-")
+        let apidate = new Date()
+          .toLocaleDateString("zh-TW", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .replace(/\//g, "-");
         const mealRecords = await getMealRecord({ date: apidate });
-  
+
         if (!mealRecords || mealRecords.message === "未找到該日期的用餐記錄") {
           console.log(`No meal records found for ${apidate}`);
           return;
@@ -87,55 +100,82 @@ export default function DashboardPage() {
           dailyMeals.Dinner = 0;
           dailyMeals.Other = 0;
         }
-        
-  
-        setMeals([ 
+
+        setMeals([
           { meal: "Breakfast", calories: dailyMeals.Breakfast },
           { meal: "Lunch", calories: dailyMeals.Lunch },
           { meal: "Dinner", calories: dailyMeals.Dinner },
           { meal: "Other", calories: dailyMeals.Other },
         ]);
-  
+
         // 如果沒有有效暫存資料，才請求並更新當週的熱量數據
         if (!isCacheValid) {
-          const weeksData: Array<Array<{ day: string; totalCalories: number }>> = [];
+          const weeksData: Array<
+            Array<{ day: string; totalCalories: number }>
+          > = [];
           for (let week = 1; week > -3; week--) {
             const weekData: Array<{ day: string; totalCalories: number }> = [];
             const startOfWeek = new Date();
-            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() - (week + 2) * 7);
+            startOfWeek.setDate(
+              startOfWeek.getDate() - startOfWeek.getDay() - (week + 2) * 7
+            );
             for (let i = 0; i < 7; i++) {
               const date = new Date(startOfWeek);
               date.setDate(date.getDate() + i);
-              const formattedDate = date.toLocaleDateString("zh-TW", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-");
+              const formattedDate = date
+                .toLocaleDateString("zh-TW", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                })
+                .replace(/\//g, "-");
               try {
                 const mealRecord = await getMealRecord({ date: formattedDate });
-                const totalCalories = mealRecord?.reduce(
-                  (sum: number, mealRecord: MealRecord) => sum + mealRecord.calories,
-                  0
-                ) || 0;
-                weekData.push({ day: ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."][i], totalCalories });
+                const totalCalories =
+                  mealRecord?.reduce(
+                    (sum: number, mealRecord: MealRecord) =>
+                      sum + mealRecord.calories,
+                    0
+                  ) || 0;
+                weekData.push({
+                  day: ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."][
+                    i
+                  ],
+                  totalCalories,
+                });
               } catch (error) {
-                console.error(`Error fetching meal record for ${formattedDate}:`, error);
-                weekData.push({ day: ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."][i], totalCalories: 0 });
+                console.error(
+                  `Error fetching meal record for ${formattedDate}:`,
+                  error
+                );
+                weekData.push({
+                  day: ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."][
+                    i
+                  ],
+                  totalCalories: 0,
+                });
               }
             }
             weeksData.push(weekData);
           }
-  
+
           setWeeklyCalories(weeksData);
-  
+
           // 儲存資料到暫存
-          sessionStorage.setItem(cacheKey, JSON.stringify({ meals, weeklyCalories: weeksData }));
+          sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({ meals, weeklyCalories: weeksData })
+          );
           sessionStorage.setItem(cacheTimestampKey, Date.now().toString());
         }
-  
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
-  
+
     fetchUserDataAndMeals();
   }, [navigate]);
 
@@ -149,25 +189,36 @@ export default function DashboardPage() {
   const handleBarClick = useCallback((day: string) => {
     setSelectedDay(day);
   }, []);
-  
+
   useEffect(() => {
     const chartInstance = Chart.getChart("calories");
     if (chartInstance) {
       chartInstance.destroy();
     }
-  
+
     const ctx = document.getElementById("calories") as HTMLCanvasElement | null;
     if (ctx) {
-      const daysOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."];
+      const daysOfWeek = [
+        "Sun.",
+        "Mon.",
+        "Tue.",
+        "Wed.",
+        "Thr.",
+        "Fri.",
+        "Sat.",
+      ];
       const todayIndex = new Date().getDay();
       const todayLabel = daysOfWeek[todayIndex];
-      const totalCaloriesToday = meals.reduce((sum, meal) => sum + meal.calories, 0);
-  
+      const totalCaloriesToday = meals.reduce(
+        (sum, meal) => sum + meal.calories,
+        0
+      );
+
       const maxCalories = Math.max(
         ...calorieData.map((row) => row.totalCalories),
-        totalCaloriesToday 
+        totalCaloriesToday
       );
-  
+
       const chart = new Chart(ctx, {
         type: "bar",
         data: {
@@ -208,50 +259,65 @@ export default function DashboardPage() {
           },
         },
       });
-  
+
       const updateTodayCalories = () => {
         const barDataset = chart.data.datasets[0];
-  
-        if (currentWeek === 3) { 
-          const todayIndexInData = calorieData.findIndex((row) => row.day === todayLabel);
-  
+
+        if (currentWeek === 3) {
+          const todayIndexInData = calorieData.findIndex(
+            (row) => row.day === todayLabel
+          );
+
           if (todayIndexInData !== -1) {
-            barDataset.data[todayIndexInData] = totalCaloriesToday; 
+            barDataset.data[todayIndexInData] = totalCaloriesToday;
           }
         }
-  
-        chart.update(); 
+
+        chart.update();
       };
-  
-      updateTodayCalories(); 
+
+      updateTodayCalories();
     }
   }, [calorieData, meals, BMR, currentWeek]);
-  
-const daysOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."];
-const todayLabel = daysOfWeek[new Date().getDay()];
 
-const totalCalories = (selectedDay === todayLabel && currentWeek === 3) 
-  ? meals.reduce((sum, meal) => sum + meal.calories, 0) 
-  : calorieData.find(({ day }) => day === selectedDay)?.totalCalories ?? 0;
+  const daysOfWeek = ["Sun.", "Mon.", "Tue.", "Wed.", "Thr.", "Fri.", "Sat."];
+  const todayLabel = daysOfWeek[new Date().getDay()];
 
-
+  const totalCalories =
+    selectedDay === todayLabel && currentWeek === 3
+      ? meals.reduce((sum, meal) => sum + meal.calories, 0)
+      : calorieData.find(({ day }) => day === selectedDay)?.totalCalories ?? 0;
 
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
+      <section className="flex flex-col items-center justify-center gap-6 py-8 md:py-10 container mx-auto">
         {loading ? (
           <div>Loading...</div>
         ) : (
           <>
-            <div className="w-full max-w-lg p-4 bg-gray-100 rounded-lg shadow">
+            {/* Week Navigation */}
+            <div className="w-full max-w-screen-lg p-4 bg-gray-100 rounded-lg shadow">
               <div className="flex items-center justify-between">
                 <button
                   aria-label="Previous Week"
                   className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-                  onClick={() => setCurrentWeek((prev) => Math.max(prev - 1, 0))}
+                  onClick={() =>
+                    setCurrentWeek((prev) => Math.max(prev - 1, 0))
+                  }
                 >
-                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15.75 19.5L8.25 12l7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-6 h-6 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15.75 19.5L8.25 12l7.5-7.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
 
@@ -262,20 +328,37 @@ const totalCalories = (selectedDay === todayLabel && currentWeek === 3)
                 <button
                   aria-label="Next Week"
                   className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
-                  onClick={() => setCurrentWeek((prev) => Math.min(prev + 1, weeklyCalories.length - 1))}
+                  onClick={() =>
+                    setCurrentWeek((prev) =>
+                      Math.min(prev + 1, weeklyCalories.length - 1)
+                    )
+                  }
                 >
-                  <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8.25 4.5l7.5 7.5-7.5 7.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-6 h-6 text-blue-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
 
-            <div className="w-full max-w-lg">
+            {/* Calories Chart */}
+            <div className="w-full max-w-screen-lg">
               <canvas id="calories" />
             </div>
 
-            <Card className="w-full max-w-lg px-2">
+            {/* Meal Records */}
+            <Card className="w-full max-w-screen-lg px-4">
               <CardHeader>
                 <h3 className="block text-lg font-semibold">{selectedDay}</h3>
               </CardHeader>
@@ -286,11 +369,13 @@ const totalCalories = (selectedDay === todayLabel && currentWeek === 3)
                 </div>
                 <Divider />
                 <div className="mb-2">
-                  {/* Filter out meals with 0 calories */}
                   {meals
                     .filter((item) => item.calories > 0)
                     .map((item, index) => (
-                      <div key={index} className="flex justify-between items-center my-2">
+                      <div
+                        key={index}
+                        className="flex justify-between items-center my-2"
+                      >
                         <h4 className="text-sm">{item.meal}</h4>
                         <div className="flex items-center gap-2">
                           <p className="text-lg">{item.calories}</p>

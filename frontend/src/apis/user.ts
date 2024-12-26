@@ -34,7 +34,7 @@ export const getUserData = async () => {
 
 // 更新使用者資料
 export const editUserData = async (data: {
-  userName: string;  
+  userName: string;
   birthDate: string;
   height: number;
   weight: number;
@@ -75,5 +75,3 @@ export const deleteUser = async () => {
     return null;
   }
 };
-
-

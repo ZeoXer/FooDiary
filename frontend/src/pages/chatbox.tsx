@@ -53,11 +53,12 @@ export default function ChatboxPage() {
         setMessagesContent((prev) =>
           prev.length === 0
             ? [
-              {
-                role: "bot",
-                message: "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
-              },
-            ]
+                {
+                  role: "bot",
+                  message:
+                    "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
+                },
+              ]
             : prev
         );
         setTimestamp(-1);
@@ -66,11 +67,13 @@ export default function ChatboxPage() {
 
       const chatContents: ChatMessage[] = contents
         .map((content: any) =>
-          content.chat_content.map((chat: any) => ({
-            role: chat.role,
-            message: chat.message,
-            timestamp: content.timestamp,
-          })).reverse()
+          content.chat_content
+            .map((chat: any) => ({
+              role: chat.role,
+              message: chat.message,
+              timestamp: content.timestamp,
+            }))
+            .reverse()
         )
         .flat()
         .reverse();
@@ -79,7 +82,9 @@ export default function ChatboxPage() {
       setMessagesContent((prev) => {
         const newMessages = chatContents.filter(
           (newMsg: ChatMessage) =>
-            !prev.some((existingMsg) => existingMsg.timestamp === newMsg.timestamp)
+            !prev.some(
+              (existingMsg) => existingMsg.timestamp === newMsg.timestamp
+            )
         );
         return [...prev, ...newMessages];
       });
@@ -100,11 +105,12 @@ export default function ChatboxPage() {
         setMessagesContent((prev) =>
           prev.length === 0
             ? [
-              {
-                role: "bot",
-                message: "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
-              },
-            ]
+                {
+                  role: "bot",
+                  message:
+                    "歡迎使用 FooDiary 聊天機器人！有什麼是我能幫助您的嗎？",
+                },
+              ]
             : prev
         );
         setTimestamp(-1);
@@ -113,23 +119,26 @@ export default function ChatboxPage() {
 
       const chatContents: ChatMessage[] = contents
         .map((content: any) =>
-          content.chat_content.map((chat: any) => ({
-            role: chat.role,
-            message: chat.message,
-            timestamp: content.timestamp,
-          })).reverse()
+          content.chat_content
+            .map((chat: any) => ({
+              role: chat.role,
+              message: chat.message,
+              timestamp: content.timestamp,
+            }))
+            .reverse()
         )
         .flat()
         .reverse();
-        
 
       setTimestamp(contents[contents.length - 1].timestamp);
       setMessagesContent((prev) => {
         const newMessages = chatContents.filter(
           (newMsg: ChatMessage) =>
-            !prev.some((existingMsg) => existingMsg.timestamp === newMsg.timestamp)
+            !prev.some(
+              (existingMsg) => existingMsg.timestamp === newMsg.timestamp
+            )
         );
-        return [...newMessages,...prev];
+        return [...newMessages, ...prev];
       });
     } catch (error) {
       console.error("取得聊天紀錄失敗：", error);
@@ -139,20 +148,25 @@ export default function ChatboxPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!userInput.trim() || !email || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+    if (
+      !userInput.trim() ||
+      !email ||
+      !wsRef.current ||
+      wsRef.current.readyState !== WebSocket.OPEN
+    ) {
       console.error("Invalid input or WebSocket state");
       return;
     }
-  
+
     setIsGenerating(true);
-  
+
     setMessagesContent((prev) => [
       ...prev,
       { role: "user", message: userInput },
     ]);
-  
-    setUserInput(""); 
-  
+
+    setUserInput("");
+
     try {
       wsRef.current.send(
         JSON.stringify({
@@ -164,25 +178,19 @@ export default function ChatboxPage() {
       console.error("Error while sending message:", error);
     }
   };
-  
-
 
   // Handle quick reply
   const handleQuickReply = (message: string) => {
-    setMessagesContent((prev) => [
-      ...prev,
-      { role: "user", message },
-    ]);
+    setMessagesContent((prev) => [...prev, { role: "user", message }]);
   };
-
 
   const loadMoreContent = () => {
     if (email && timestamp !== -1 && timestamp !== undefined) {
       fetchChatRecord(email, timestamp);
     }
   };
-  
-  const navigate = useNavigate(); 
+
+  const navigate = useNavigate();
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -190,19 +198,16 @@ export default function ChatboxPage() {
 
         if (!userDataResponse || userDataResponse.status === 401) {
           console.log("Unauthorized, redirecting to login.");
-          navigate("/login"); 
-          return; 
+          navigate("/login");
+          return;
         }
-
       } catch (error) {
         console.error("Error fetching user data:", error);
-        
       }
     };
 
     checkLoginStatus();
   }, [navigate]);
-
 
   useEffect(() => {
     const initializeWebSocket = async () => {
@@ -210,7 +215,7 @@ export default function ChatboxPage() {
       if (userEmail) {
         fetchChatRecords(userEmail);
         console.log("Fetched user email:", userEmail);
-        const ws = new WebSocket("ws://localhost:8000"); 
+        const ws = new WebSocket("ws://localhost:8000");
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -249,10 +254,10 @@ export default function ChatboxPage() {
     };
   }, []);
 
-
   return (
     <DefaultLayout>
-      <section className="flex flex-col">
+      <div className="flex flex-col w-full min-h-screen bg-gray-100">
+        {/* Load More Button */}
         <Button
           className="fixed top-20 left-1/2 -translate-x-1/2 transition"
           id="more-content"
@@ -264,71 +269,69 @@ export default function ChatboxPage() {
         >
           {timestamp === -1 ? "這裡已經是對話的起點" : "載入更多對話"}
         </Button>
-        {/* Chat Window */}
-        <div className="w-full max-w-lg mx-auto pb-32">
-          {messagesContent.map((messageContent, index) => (
-            <div
-              key={index}
-              className={`flex mb-6 gap-2 ${messageContent.role === "user" ? "flex-row-reverse" : ""
-                }`}
-            >
-              <Avatar
-                showFallback
-                classNames={{ base: messageContent.role === "bot" ? "bg-white" : "" }}
-                size="sm"
-                src={messageContent.role === "bot" ? "/assets/FooDiary.png" : ""}
-              />
-              <div
-                className={`p-3 rounded-lg max-w-xs ${messageContent.role === "bot"
-                    ? "bg-gray-300 text-black"
-                    : "bg-blue-500 text-white"
-                  }`}
-              >
-                <MarkdownDisplay content={messageContent.message} />
-              </div>
-            </div>
-          ))}
 
-          {isGenerating && (
-            <div className="flex mb-6 gap-2">
-              <Avatar classNames={{ base: "bg-white" }} size="sm" src="/assets/FooDiary.png" />
-              <div className="w-full max-w-xs bg-gray-300 p-3 rounded-lg grid gap-2">
-                <Skeleton className="w-3/5 rounded-lg">
-                  <div className="h-3 bg-secondary" />
-                </Skeleton>
-                <Skeleton className="w-4/5 rounded-lg">
-                  <div className="h-3 bg-secondary" />
-                </Skeleton>
-                <Skeleton className="w-2/5 rounded-lg">
-                  <div className="h-3 bg-secondary" />
-                </Skeleton>
+        {/* Chat Window */}
+        <div className="flex-grow flex justify-center py-6 px-2 sm:px-4">
+          <div className="w-full max-w-full sm:max-w-lg lg:max-w-screen-lg xl:max-w-screen-xl bg-white shadow-lg rounded-lg p-4 sm:p-6 lg:p-8">
+            {messagesContent.map((messageContent, index) => (
+              <div
+                key={index}
+                className={`flex mb-6 gap-4 ${
+                  messageContent.role === "user" ? "flex-row-reverse" : ""
+                }`}
+              >
+                <Avatar
+                  showFallback
+                  classNames={{
+                    base: messageContent.role === "bot" ? "bg-white" : "",
+                  }}
+                  size="md"
+                  src={
+                    messageContent.role === "bot" ? "/assets/FooDiary.png" : ""
+                  }
+                />
+                <div
+                  className={`p-4 sm:p-6 rounded-lg max-w-full sm:max-w-lg lg:max-w-3xl shadow-md ${
+                    messageContent.role === "bot"
+                      ? "bg-gray-300 text-black"
+                      : "bg-blue-500 text-white"
+                  }`}
+                >
+                  <MarkdownDisplay content={messageContent.message} />
+                </div>
               </div>
-            </div>
-          )}
-          {/* 滾動到此處 */}
-          <div ref={chatWindowRef} />
+            ))}
+
+            {isGenerating && (
+              <div className="flex mb-6 gap-4">
+                <Avatar
+                  classNames={{ base: "bg-white" }}
+                  size="md"
+                  src="/assets/FooDiary.png"
+                />
+                <div className="w-full max-w-full sm:max-w-lg bg-gray-300 p-4 rounded-lg grid gap-2">
+                  <Skeleton className="w-3/5 rounded-lg">
+                    <div className="h-3 bg-secondary" />
+                  </Skeleton>
+                  <Skeleton className="w-4/5 rounded-lg">
+                    <div className="h-3 bg-secondary" />
+                  </Skeleton>
+                  <Skeleton className="w-2/5 rounded-lg">
+                    <div className="h-3 bg-secondary" />
+                  </Skeleton>
+                </div>
+              </div>
+            )}
+            {/* 滾動到此處 */}
+            <div ref={chatWindowRef} />
+          </div>
         </div>
 
-        {/* Quick Replies + Input Box */}
-        <div className="fixed w-full max-w-lg mx-auto bottom-0 left-0 right-0 bg-white border-t border-gray-300">
-          {/* Quick Replies */}
-          <div className="flex gap-2 bg-gray-100 p-2">
-            {quickReplies.map((reply, index) => (
-              <Button
-                key={index}
-                className="bg-purple-500 text-white"
-                size="sm"
-                onClick={() => handleQuickReply(reply)}
-              >
-                {reply}
-              </Button>
-            ))}
-          </div>
-
-          {/* Input Box */}
-          <div className="flex max-w-lg w-full items-center p-4">
+        {/* Input Box */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex gap-4 items-center max-w-full sm:max-w-lg lg:max-w-screen-lg xl:max-w-screen-xl mx-auto">
             <Input
-              className="flex-grow mr-2"
+              className="flex-grow"
               placeholder="傳訊息給 FooDiary"
               size="lg"
               value={userInput}
@@ -345,7 +348,7 @@ export default function ChatboxPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </div>
     </DefaultLayout>
   );
 }
