@@ -503,13 +503,21 @@ return (
                   ))}
               </div>
 
-              <div className="flex justify-end">
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <Button
                   onClick={() => {
-                    navigate(`/foodrecord?date=${selectedDate}`); 
+                    navigate(`/foodrecord?date=${new Date().toLocaleDateString("zh-TW")}`);
                   }}
                 >
-                  新增紀錄
+                  新增今天的紀錄
+                </Button>
+                <Button
+                  onClick={() => {
+                    navigate(`/foodrecord?date=${selectedDate}`);
+                  }}
+                >
+                  新增點選的當日紀錄
                 </Button>
               </div>
             </CardBody>
