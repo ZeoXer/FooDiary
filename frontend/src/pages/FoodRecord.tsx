@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import DefaultLayout from "@/layouts/default";
 import { addMealRecord } from "@/apis/record";
@@ -14,6 +15,9 @@ type FoodEntry = {
 };
 
 export default function FoodRecordPage() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const date = queryParams.get('date') || new Date().toLocaleDateString("zh-TW");
   const [mealType, setMealType] = useState<string>("Dinner");
   const [currentTime, setCurrentTime] = useState<string>("");
   const [currentDate, setCurrentDate] = useState<string>("");
@@ -81,7 +85,7 @@ export default function FoodRecordPage() {
     setFoodEntries((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const apiDate = new Date().toLocaleDateString("zh-TW");
+  // const apiDate = new Date().toLocaleDateString("zh-TW");
 
   const handleGenerateRecommendation = async () => {
     // 驗證卡路里是否為有效正數且不能包含特殊字符
@@ -127,7 +131,7 @@ export default function FoodRecordPage() {
       return;
     }
 
-    let records = await getSingleMealRecord({ date: apiDate });
+    let records = await getSingleMealRecord({ date: date });
 
     if (records.message === "未找到該日期的用餐記錄") {
       records = [];
@@ -144,7 +148,7 @@ export default function FoodRecordPage() {
 
     const mealInfo = {
       whichMeal: mealType,
-      mealTime: currentDate + " " + currentTime,
+      mealTime: date,
       foodContent: foodEntries.map((entry) => ({
         foodName: entry.name,
         weightInGram: parseFloat(entry.weight) || 0,
@@ -168,7 +172,7 @@ export default function FoodRecordPage() {
   };
 
   const handleSubmitResults = async () => {
-    let records = await getSingleMealRecord({ date: apiDate });
+    let records = await getSingleMealRecord({ date: date });
 
     if (records.message === "未找到該日期的用餐記錄") {
       records = [];
@@ -226,17 +230,17 @@ export default function FoodRecordPage() {
       return;
     }
 
-    const now = new Date();
-    const formattedMealTime = now
-      .toLocaleDateString("zh-TW", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .replace(/\//g, "-");
+    // const now = new Date();
+    // const formattedMealTime = now
+    //   .toLocaleDateString("zh-TW", {
+    //     year: "numeric",
+    //     month: "2-digit",
+    //     day: "2-digit",
+    //   })
+    //   .replace(/\//g, "-");
 
     const mealData = {
-      mealTime: formattedMealTime,
+      mealTime: date,
       whichMeal: mealType,
       foodContent: foodEntries.map((entry) => ({
         foodName: entry.name,

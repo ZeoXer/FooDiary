@@ -12,7 +12,7 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:8000", // 將所有 /api 開頭的請求代理到後端伺服器
         changeOrigin: true,
-        // rewrite: (path) => path.replace(/^\/api/, ""),
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },
