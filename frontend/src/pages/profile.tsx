@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import DefaultLayout from "@/layouts/default";
 import { getUserData, editUserData } from "@/apis/user";
 import { UserIcon } from "@/components/icons";
-import { useNavigate } from "react-router-dom";
 
 // 定義 UserInfo 的型別，讓 avatar 支援 string | null
 type UserInfo = {
@@ -29,7 +29,8 @@ export default function ProfilePage() {
 
         if (!userDataResponse || userDataResponse.status === 401) {
           console.log("Unauthorized, redirecting to login.");
-          navigate("/login"); 
+          navigate("/login");
+ 
           return; 
         }
 
@@ -45,12 +46,14 @@ export default function ProfilePage() {
   // 驗證使用者名稱是否符合要求：只能包含中文或英文字符
   const validateName = (name: string) => {
     const regex = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+
     return regex.test(name);
   };
 
   // 驗證 email 格式
   const validateEmail = (email: string) => {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     return regex.test(email);
   };
 
@@ -66,6 +69,7 @@ export default function ProfilePage() {
           [field]: value,
         };
       }
+
       return {
         name: "",
         email: "",
@@ -84,10 +88,12 @@ export default function ProfilePage() {
       // 檢查使用者名稱和 email 是否符合格式
       if (!validateName(editInfo.name)) {
         alert("使用者名稱只能包含中文或英文字符！");
+
         return;
       }
       if (!validateEmail(editInfo.email)) {
         alert("請輸入有效的 email 地址！");
+
         return;
       }
 
@@ -134,6 +140,7 @@ export default function ProfilePage() {
         exerciseFrequency: userData.exerciseFrequency,
         bmr: userData.bmr,
       };
+
       setUserInfo(userDataFetched); 
       setEditInfo(userDataFetched); 
     }

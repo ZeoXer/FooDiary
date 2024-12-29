@@ -43,9 +43,11 @@ export const editUserData = async (data: {
 }) => {
   try {
     const response = await Axios.put("/api/user/editUserData", data);
+
     return response.data;
   } catch (error) {
     console.error("Error editing user data:", error);
+
     return null;
   }
 };
@@ -58,9 +60,11 @@ export const updatePassword = async (data: {
 }) => {
   try {
     const response = await Axios.put("/api/user/updatePassword", data);
+
     return response.data;
   } catch (error) {
     console.error("Error updating password:", error);
+
     return null;
   }
 };
@@ -69,9 +73,11 @@ export const updatePassword = async (data: {
 export const deleteUser = async () => {
   try {
     const response = await Axios.delete("/api/user/deleteUser");
+
     return response.data;
   } catch (error) {
     console.error("Error deleting user:", error);
+
     return null;
   }
 };

@@ -10,19 +10,24 @@ export default function DefaultLayout({
   return (
     <div className="relative flex flex-col h-screen">
       <Navbar />
-      <main className="container mx-auto max-w-7xl px-6 flex-grow pt-16">
+      <main className="container mx-auto max-w-7xl px-6 flex-grow">
         {children}
       </main>
-      <footer className="w-full flex items-center justify-center py-3">
-        <Link
-          isExternal
-          className="flex items-center gap-1 text-current"
-          href="https://nextui-docs-v2.vercel.app?utm_source=next-pages-template"
-          title="nextui.org homepage"
-        >
-          {/* <span className="text-default-600">Powered by</span>
-          <p className="text-primary">NextUI</p> */}
-        </Link>
+      <footer className="bg-gray-100 py-4">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-sm text-gray-600">
+            © {new Date().getFullYear()} FooDiary. All rights reserved.
+          </p>
+          <div className="flex justify-center gap-4 mt-2">
+            <Link
+              isExternal
+              className="text-sm text-gray-600 hover:text-violet-600"
+              href="https://github.com/ZeoXer/FooDiary"
+            >
+              GitHub
+            </Link>
+          </div>
+        </div>
       </footer>
     </div>
   );

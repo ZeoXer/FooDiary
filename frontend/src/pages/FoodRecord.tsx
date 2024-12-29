@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { Button, Spinner } from "@nextui-org/react";
 
 import DefaultLayout from "@/layouts/default";
 import { addMealRecord } from "@/apis/record";
 import { generateRecommendation } from "@/apis/chat";
 import { getUserData } from "@/apis/user";
-import { getSingleMealRecord } from "@/apis/record";
+import MarkdownDisplay from "@/components/markdown-display";
+
+// import { getSingleMealRecord } from "@/apis/record";
 
 type FoodEntry = {
   name: string;
@@ -17,7 +20,8 @@ type FoodEntry = {
 export default function FoodRecordPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const date = queryParams.get('date') || new Date().toLocaleDateString("zh-TW");
+  const date =
+    queryParams.get("date") || new Date().toLocaleDateString("zh-TW");
   const [mealType, setMealType] = useState<string>("Dinner");
   const [currentTime, setCurrentTime] = useState<string>("");
   const [currentDate, setCurrentDate] = useState<string>("");
@@ -25,6 +29,7 @@ export default function FoodRecordPage() {
     { name: "", weight: "", calories: "" },
   ]);
   const [recommendation, setRecommendation] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -36,6 +41,7 @@ export default function FoodRecordPage() {
         if (!userDataResponse || userDataResponse.status === 401) {
           console.log("Unauthorized, redirecting to login.");
           navigate("/login");
+
           return;
         }
       } catch (error) {
@@ -61,6 +67,7 @@ export default function FoodRecordPage() {
         day: "2-digit",
       })
       .replace(/\//g, "-");
+
     setCurrentTime(formattedTime);
     setCurrentDate(formattedDate);
   }, []);
@@ -96,10 +103,12 @@ export default function FoodRecordPage() {
         parseFloat(entry.calories.trim()) <= 0 ||
         /[^0-9.]/.test(entry.calories.trim())
     );
+
     if (invalidCalories) {
       alert(
         "請確認所有食物條目已填寫有效的卡路里數字（卡路里應為正數，且不能包含特殊字符）！"
       );
+
       return;
     }
 
@@ -111,10 +120,12 @@ export default function FoodRecordPage() {
         parseFloat(entry.weight.trim()) <= 0 ||
         /[^0-9.]/.test(entry.weight.trim())
     );
+
     if (invalidWeight) {
       alert(
         "請確認所有食物條目已填寫有效的食物重量數字（重量應為正數，且不能包含特殊字符）！"
       );
+
       return;
     }
 
@@ -124,27 +135,30 @@ export default function FoodRecordPage() {
         !entry.name.trim() ||
         /[^a-zA-Z0-9\s\u4e00-\u9fa5]/.test(entry.name.trim())
     );
+
     if (invalidName) {
       alert(
         "請確認所有食物條目已填寫有效的名稱（名稱應僅包含字母、數字、空格或中文，且不能有特殊字符）！"
       );
+
       return;
     }
 
-    let records = await getSingleMealRecord({ date: date });
+    // let records = await getSingleMealRecord({ date: date });
 
-    if (records.message === "未找到該日期的用餐記錄") {
-      records = [];
-    }
+    // if (records.message === "未找到該日期的用餐記錄") {
+    //   records = [];
+    // }
 
-    const existingMeal = (records || []).filter(
-      (record: any) => record.whichMeal === mealType
-    );
+    // const existingMeal = (records || []).filter(
+    //   (record: any) => record.whichMeal === mealType
+    // );
 
-    if (existingMeal.length > 0) {
-      alert(`${mealType} 記錄已存在。`);
-      return;
-    }
+    // if (existingMeal.length > 0) {
+    //   alert(`${mealType} 記錄已存在。`);
+
+    //   return;
+    // }
 
     const mealInfo = {
       whichMeal: mealType,
@@ -156,13 +170,17 @@ export default function FoodRecordPage() {
       })),
       calories: foodEntries.reduce((total, entry) => {
         const entryCalories = parseFloat(entry.calories);
+
         return total + (isNaN(entryCalories) ? 0 : entryCalories);
       }, 0),
     };
 
     console.log("生成的餐點資訊：", mealInfo);
 
+    setIsLoading(true);
     const suggestion = await generateRecommendation(mealInfo);
+
+    setIsLoading(false);
 
     if (suggestion) {
       setRecommendation(suggestion);
@@ -172,20 +190,21 @@ export default function FoodRecordPage() {
   };
 
   const handleSubmitResults = async () => {
-    let records = await getSingleMealRecord({ date: date });
+    // let records = await getSingleMealRecord({ date: date });
 
-    if (records.message === "未找到該日期的用餐記錄") {
-      records = [];
-    }
+    // if (records.message === "未找到該日期的用餐記錄") {
+    //   records = [];
+    // }
 
-    const existingMeal = (records || []).filter(
-      (record: any) => record.whichMeal === mealType
-    );
+    // const existingMeal = (records || []).filter(
+    //   (record: any) => record.whichMeal === mealType
+    // );
 
-    if (existingMeal.length > 0) {
-      alert(`${mealType} 記錄已存在。`);
-      return;
-    }
+    // if (existingMeal.length > 0) {
+    //   alert(`${mealType} 記錄已存在。`);
+
+    //   return;
+    // }
 
     // 驗證卡路里是否為有效正數且不能包含特殊字符
     const invalidCalories = foodEntries.some(
@@ -195,10 +214,12 @@ export default function FoodRecordPage() {
         parseFloat(entry.calories.trim()) <= 0 ||
         /[^0-9.]/.test(entry.calories.trim())
     );
+
     if (invalidCalories) {
       alert(
         "請確認所有食物條目已填寫有效的卡路里數字（卡路里應為正數，且不能包含特殊字符）！"
       );
+
       return;
     }
 
@@ -210,10 +231,12 @@ export default function FoodRecordPage() {
         parseFloat(entry.weight.trim()) <= 0 ||
         /[^0-9.]/.test(entry.weight.trim())
     );
+
     if (invalidWeight) {
       alert(
         "請確認所有食物條目已填寫有效的食物重量數字（重量應為正數，且不能包含特殊字符）！"
       );
+
       return;
     }
 
@@ -223,10 +246,12 @@ export default function FoodRecordPage() {
         !entry.name.trim() ||
         /[^a-zA-Z0-9\s\u4e00-\u9fa5]/.test(entry.name.trim())
     );
+
     if (invalidName) {
       alert(
         "請確認所有食物條目已填寫有效的名稱（名稱應僅包含字母、數字、空格或中文，且不能有特殊字符）！"
       );
+
       return;
     }
 
@@ -249,6 +274,7 @@ export default function FoodRecordPage() {
       })),
       calories: foodEntries.reduce((total, entry) => {
         const entryCalories = parseFloat(entry.calories);
+
         return total + (isNaN(entryCalories) ? 0 : entryCalories);
       }, 0),
       suggestion: recommendation,
@@ -256,10 +282,10 @@ export default function FoodRecordPage() {
 
     try {
       const result = await addMealRecord(mealData);
+
       if (result) {
         alert("紀錄成功！");
-        setFoodEntries([{ name: "", weight: "", calories: "" }]);
-        setRecommendation("");
+        navigate("/dashboard");
       } else {
         throw new Error("紀錄失敗");
       }
@@ -349,17 +375,19 @@ export default function FoodRecordPage() {
 
         {/* 按鈕和建議區域 */}
         <div className="space-y-6">
-          <button
-            className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-all font-medium text-lg shadow-sm hover:shadow"
-            onClick={handleGenerateRecommendation}
+          <Button
+            className="w-full bg-white border-2 border-gray-300 text-gray-700 py-6 rounded-lg hover:bg-gray-50 transition-all font-medium text-lg shadow-sm hover:shadow"
+            isDisabled={isLoading}
+            onPress={handleGenerateRecommendation}
           >
+            {isLoading && <Spinner />}
             生成飲食建議
-          </button>
+          </Button>
 
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h2 className="text-2xl font-bold mb-4 text-gray-800">飲食建議</h2>
             <div className="border-2 border-gray-100 p-4 rounded-lg bg-gray-50 min-h-[100px] text-gray-700 leading-relaxed">
-              {recommendation || "目前無建議"}
+              <MarkdownDisplay content={recommendation || "目前無建議"} />
             </div>
           </div>
 

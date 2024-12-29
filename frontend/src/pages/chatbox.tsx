@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { Avatar } from "@nextui-org/avatar";
-import { Spinner } from "@nextui-org/spinner";
-import { Skeleton } from "@nextui-org/skeleton";
+import { Input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+import { Avatar } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
+import { Skeleton } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 import DefaultLayout from "@/layouts/default";
 import { getChatRecords } from "@/apis/chat";
 import { getUserData } from "@/apis/user";
 import { ChatMessage } from "@/types";
 import MarkdownDisplay from "@/components/markdown-display";
-import { useNavigate } from "react-router-dom";
 
 export default function ChatboxPage() {
   const [messagesContent, setMessagesContent] = useState<ChatMessage[]>([]);
@@ -21,7 +21,7 @@ export default function ChatboxPage() {
   const [email, setEmail] = useState<string | null>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
-  const quickReplies = ["問題一", "問題二", "問題三"];
+  // const quickReplies = ["問題一", "問題二", "問題三"];
   const wsRef = useRef<WebSocket | null>(null);
 
   // Fetch user email
@@ -32,12 +32,14 @@ export default function ChatboxPage() {
 
       if (userEmail) {
         setEmail(userEmail);
+
         return userEmail;
       }
 
       throw new Error("無法取得使用者 Email");
     } catch (error) {
       console.error("取得 Email 失敗：", error);
+
       return null;
     }
   };
@@ -62,6 +64,7 @@ export default function ChatboxPage() {
             : prev
         );
         setTimestamp(-1);
+
         return;
       }
 
@@ -86,6 +89,7 @@ export default function ChatboxPage() {
               (existingMsg) => existingMsg.timestamp === newMsg.timestamp
             )
         );
+
         return [...prev, ...newMessages];
       });
     } catch (error) {
@@ -114,6 +118,7 @@ export default function ChatboxPage() {
             : prev
         );
         setTimestamp(-1);
+
         return;
       }
 
@@ -138,6 +143,7 @@ export default function ChatboxPage() {
               (existingMsg) => existingMsg.timestamp === newMsg.timestamp
             )
         );
+
         return [...newMessages, ...prev];
       });
     } catch (error) {
@@ -155,6 +161,7 @@ export default function ChatboxPage() {
       wsRef.current.readyState !== WebSocket.OPEN
     ) {
       console.error("Invalid input or WebSocket state");
+
       return;
     }
 
@@ -180,9 +187,9 @@ export default function ChatboxPage() {
   };
 
   // Handle quick reply
-  const handleQuickReply = (message: string) => {
-    setMessagesContent((prev) => [...prev, { role: "user", message }]);
-  };
+  // const handleQuickReply = (message: string) => {
+  //   setMessagesContent((prev) => [...prev, { role: "user", message }]);
+  // };
 
   const loadMoreContent = () => {
     if (email && timestamp !== -1 && timestamp !== undefined) {
@@ -191,6 +198,7 @@ export default function ChatboxPage() {
   };
 
   const navigate = useNavigate();
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
@@ -199,6 +207,7 @@ export default function ChatboxPage() {
         if (!userDataResponse || userDataResponse.status === 401) {
           console.log("Unauthorized, redirecting to login.");
           navigate("/login");
+
           return;
         }
       } catch (error) {
@@ -212,10 +221,12 @@ export default function ChatboxPage() {
   useEffect(() => {
     const initializeWebSocket = async () => {
       const userEmail = await fetchUserEmail();
+
       if (userEmail) {
         fetchChatRecords(userEmail);
         console.log("Fetched user email:", userEmail);
         const ws = new WebSocket("ws://localhost:8000");
+
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -224,6 +235,7 @@ export default function ChatboxPage() {
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
+
           if (data.error) {
             console.error("WebSocket error:", data.error);
           } else if (data.response) {
@@ -328,7 +340,7 @@ export default function ChatboxPage() {
         </div>
 
         {/* Input Box */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t z-10 border-gray-300 px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex gap-4 items-center max-w-full sm:max-w-lg lg:max-w-screen-lg xl:max-w-screen-xl mx-auto">
             <Input
               className="flex-grow"
@@ -342,7 +354,7 @@ export default function ChatboxPage() {
               className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-transform"
               isDisabled={isGenerating}
               size="lg"
-              onClick={handleSendMessage}
+              onPress={handleSendMessage}
             >
               {isGenerating ? <Spinner color="white" /> : "➤"}
             </Button>

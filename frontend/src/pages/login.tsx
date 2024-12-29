@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+import { Link } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 
 import { title } from "@/components/primitives";
@@ -29,6 +29,7 @@ export default function LoginPage() {
   
     if (!email || !password) {
       alert("請提供電子郵件和密碼！");
+
       return;
     }
   

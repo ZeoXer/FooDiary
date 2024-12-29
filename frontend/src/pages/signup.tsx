@@ -47,6 +47,7 @@ export default function SignupPage() {
   const handleSignup = async () => {
     if (!userName || !email || !password) {
       alert("請填寫完整的註冊資料！");
+
       return;
     }
   

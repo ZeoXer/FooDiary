@@ -46,6 +46,7 @@ export const generateRecommendation = async (
     return response.data.suggestion;
   } catch (error) {
     console.error("Error generating recommendation:", error);
+
     return null;
   }
 };

@@ -18,3 +18,15 @@ Axios.interceptors.request.use((config) => {
 
   return config;
 });
+
+Axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.log("Unauthorized, redirecting to login.");
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);

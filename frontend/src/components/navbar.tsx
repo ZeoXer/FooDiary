@@ -11,13 +11,26 @@ import {
 } from "@nextui-org/navbar";
 import { link as linkStyles } from "@nextui-org/theme";
 import clsx from "clsx";
+import { Button } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/use-auth";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { removeAuthToken } from "@/apis/cookie";
 
 export const Navbar = () => {
   const { theme } = useTheme();
+  const { isAuthorized } = useAuth();
+  const navigate = useNavigate();
+
+  if (!isAuthorized) return null;
+
+  const handleLogout = () => {
+    removeAuthToken();
+    navigate("/");
+  };
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
@@ -35,7 +48,7 @@ export const Navbar = () => {
             />
           </Link>
         </NavbarBrand>
-        <div className="hidden lg:flex gap-4 justify-start ml-2">
+        <div className="hidden lg:flex gap-4 justify-start items-center ml-2">
           {siteConfig.navItems.map((item) => (
             <NavbarItem key={item.href}>
               <Link
@@ -50,6 +63,16 @@ export const Navbar = () => {
               </Link>
             </NavbarItem>
           ))}
+          <Button
+            className="text-md"
+            color="secondary"
+            radius="full"
+            size="sm"
+            variant="bordered"
+            onPress={handleLogout}
+          >
+            登出
+          </Button>
         </div>
       </NavbarContent>
 
@@ -76,8 +99,8 @@ export const Navbar = () => {
                   index === 2
                     ? "primary"
                     : index === siteConfig.navMenuItems.length - 1
-                    ? "danger"
-                    : "foreground"
+                      ? "danger"
+                      : "foreground"
                 }
                 href={item.href}
                 size="lg"
@@ -86,6 +109,7 @@ export const Navbar = () => {
               </Link>
             </NavbarMenuItem>
           ))}
+          <Button>登出</Button>
         </div>
       </NavbarMenu>
     </NextUINavbar>

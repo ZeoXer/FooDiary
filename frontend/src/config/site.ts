@@ -5,78 +5,30 @@ export const siteConfig = {
   description: "Make beautiful websites regardless of your design experience.",
   navItems: [
     {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Login",
-      href: "/login",
-    },
-    {
-      label: "Signup",
-      href: "/signup",
-    },
-    {
-      label: "Dashboard",
+      label: "儀錶板",
       href: "/dashboard",
     },
     {
-      label: "Info Form",
-      href: "/info-form",
-    },
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "chatbox",
+      label: "聊天室",
       href: "/chatbox",
     },
     {
-      label: "FoodRecord",
-      href: "/FoodRecord",
-    },
-    {
-      label: "FoodContent",
-      href: "/FoodContent",
+      label: "個人檔案",
+      href: "/profile",
     },
   ],
   navMenuItems: [
     {
-      label: "Home",
-      href: "/",
-    },
-    {
-      label: "Login",
-      href: "/login",
-    },
-    {
-      label: "Signup",
-      href: "/signup",
-    },
-    {
-      label: "Dashboard",
+      label: "儀錶板",
       href: "/dashboard",
     },
     {
-      label: "Info Form",
-      href: "/info-form",
-    },
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "chatbox",
+      label: "聊天室",
       href: "/chatbox",
     },
     {
-      label: "FoodRecord",
-      href: "/FoodRecord",
-    },
-    {
-      label: "FoodContent",
-      href: "/FoodContent",
+      label: "個人檔案",
+      href: "/profile",
     },
   ],
   links: {

@@ -19,6 +19,7 @@ export const signup = async (
     if (error.response) {
       return error.response.data; 
     }
+
     return { message: '登入過程中發生錯誤，請稍後再試' };
   }
 };
@@ -37,6 +38,7 @@ export const login = async (email: string, password: string) => {
     if (error.response) {
       return error.response.data; 
     }
+
     return { message: '登入過程中發生錯誤，請稍後再試' };
   }
 };
