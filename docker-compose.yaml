@@ -1,0 +1,52 @@
+services:
+  backend:
+    container_name: fooDairy-backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./backend/logs:/var/log/backend
+    restart: always
+    networks:
+      - fooDairy
+  
+  redis:
+    image: redis:6.2
+    container_name: fooDairy-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - fooDairy
+  
+  frontend:
+    container_name: fooDairy-frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./frontend/logs:/var/log/frontend
+    restart: always
+    networks:
+      - fooDairy
+
+networks:
+  fooDairy:
