@@ -1,6 +1,6 @@
 services:
   backend:
-    container_name: fooDairy-backend
+    container_name: fooDiary-backend
     build: 
       context: ./backend
       dockerfile: Dockerfile
@@ -17,19 +17,19 @@ services:
       - ./backend/logs:/var/log/backend
     restart: always
     networks:
-      - fooDairy
+      - fooDiary
   
   redis:
     image: redis:6.2
-    container_name: fooDairy-redis
+    container_name: fooDiary-redis
     ports:
       - "6379:6379"
     restart: always
     networks:
-      - fooDairy
+      - fooDiary
   
   frontend:
-    container_name: fooDairy-frontend
+    container_name: fooDiary-frontend
     build: 
       context: ./frontend
       dockerfile: Dockerfile
@@ -46,7 +46,7 @@ services:
       - ./frontend/logs:/var/log/frontend
     restart: always
     networks:
-      - fooDairy
+      - fooDiary
 
 networks:
-  fooDairy:
+  fooDiary:
