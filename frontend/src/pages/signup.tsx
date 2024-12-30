@@ -119,7 +119,7 @@ export default function SignupPage() {
             value={password}
             onValueChange={setPassword}
           />
-          <Button size="lg" onClick={handleSignup}>
+          <Button size="lg" onPress={handleSignup}>
             註冊
           </Button>
           <div className="grid grid-cols-2 gap-4">

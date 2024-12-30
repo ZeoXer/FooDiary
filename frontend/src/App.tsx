@@ -4,6 +4,8 @@ import { Route, Routes } from "react-router-dom";
 import IndexPage from "@/pages/index";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
+import ForgetPasswordPage from "@/pages/forget-password";
+import ResetPasswordPage from "@/pages/reset-password";
 import DashboardPage from "@/pages/dashboard";
 import InfoFormPage from "@/pages/info-form";
 import ProfilePage from "@/pages/profile";
@@ -16,6 +18,8 @@ function App() {
     <Routes>
       <Route element={<IndexPage />} path="/" />
       <Route element={<LoginPage />} path="/login" />
+      <Route element={<ForgetPasswordPage />} path="/forget-password" />
+      <Route element={<ResetPasswordPage />} path="/reset-password" />
       <Route element={<SignupPage />} path="/signup" />
       <Route element={<DashboardPage />} path="/dashboard" />
       <Route element={<InfoFormPage />} path="/info-form" />

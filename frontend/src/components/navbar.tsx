@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
+// import { ThemeSwitch } from "@/components/theme-switch";
 import { removeAuthToken } from "@/apis/cookie";
 
 export const Navbar = () => {
@@ -81,12 +81,12 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-2">
-          <ThemeSwitch />
+          {/* <ThemeSwitch /> */}
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <ThemeSwitch />
+        {/* <ThemeSwitch /> */}
         <NavbarMenuToggle />
       </NavbarContent>
 
@@ -109,7 +109,16 @@ export const Navbar = () => {
               </Link>
             </NavbarMenuItem>
           ))}
-          <Button>登出</Button>
+          <Button
+            className="text-md"
+            color="secondary"
+            radius="full"
+            size="sm"
+            variant="bordered"
+            onPress={handleLogout}
+          >
+            登出
+          </Button>
         </div>
       </NavbarMenu>
     </NextUINavbar>

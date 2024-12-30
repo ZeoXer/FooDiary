@@ -106,12 +106,12 @@ export default function LoginPage() {
               onValueChange={setPassword}
             />
             <div className="mt-2 text-right">
-              <Link href="#" underline="hover">
+              <Link href="/forget-password" underline="hover">
                 忘記密碼？
               </Link>
             </div>
           </div>
-          <Button size="lg" onClick={handleLogin}>
+          <Button size="lg" onPress={handleLogin}>
             登入
           </Button>
           <div className="grid grid-cols-2 gap-4">
