@@ -26,26 +26,25 @@ export default function LoginPage() {
   };
 
   const handleLogin = async () => {
-  
     if (!email || !password) {
       alert("請提供電子郵件和密碼！");
 
       return;
     }
-  
+
     try {
       const response = await login(email, password);
-  
+
       if (response.message === "登入成功") {
         setAuthToken(response.token);
         navigate("/dashboard");
       } else {
-        alert(response.message || "發生錯誤，請稍後再試");
+        alert("帳號或密碼錯誤");
       }
     } catch (error) {
       console.error("Login error:", error);
       alert("登入過程中出現錯誤，請稍後再試");
-    } 
+    }
   };
 
   const validateEmail = (value: string) =>

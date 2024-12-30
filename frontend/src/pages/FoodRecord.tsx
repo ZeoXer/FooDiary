@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, DatePicker, Spinner } from "@nextui-org/react";
+import { DateValue, today, getLocalTimeZone } from "@internationalized/date";
 
 import DefaultLayout from "@/layouts/default";
 import { addMealRecord } from "@/apis/record";
@@ -18,13 +18,8 @@ type FoodEntry = {
 };
 
 export default function FoodRecordPage() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const date =
-    queryParams.get("date") || new Date().toLocaleDateString("zh-TW");
   const [mealType, setMealType] = useState<string>("Dinner");
-  const [currentTime, setCurrentTime] = useState<string>("");
-  const [currentDate, setCurrentDate] = useState<string>("");
+  const [date, setDate] = useState<DateValue | null>(today(getLocalTimeZone()));
   const [foodEntries, setFoodEntries] = useState<FoodEntry[]>([
     { name: "", weight: "", calories: "" },
   ]);
@@ -52,26 +47,6 @@ export default function FoodRecordPage() {
     checkLoginStatus();
   }, [navigate]);
 
-  useEffect(() => {
-    const now = new Date();
-    const formattedTime = now.toLocaleString("zh-TW", {
-      timeZone: "Asia/Taipei",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-    const formattedDate = now
-      .toLocaleDateString("zh-TW", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-      .replace(/\//g, "-");
-
-    setCurrentTime(formattedTime);
-    setCurrentDate(formattedDate);
-  }, []);
-
   const handleAddEntry = () => {
     setFoodEntries((prev) => [...prev, { name: "", weight: "", calories: "" }]);
   };
@@ -91,8 +66,6 @@ export default function FoodRecordPage() {
   const handleDeleteEntry = (index: number) => {
     setFoodEntries((prev) => prev.filter((_, i) => i !== index));
   };
-
-  // const apiDate = new Date().toLocaleDateString("zh-TW");
 
   const handleGenerateRecommendation = async () => {
     // 驗證卡路里是否為有效正數且不能包含特殊字符
@@ -144,25 +117,9 @@ export default function FoodRecordPage() {
       return;
     }
 
-    // let records = await getSingleMealRecord({ date: date });
-
-    // if (records.message === "未找到該日期的用餐記錄") {
-    //   records = [];
-    // }
-
-    // const existingMeal = (records || []).filter(
-    //   (record: any) => record.whichMeal === mealType
-    // );
-
-    // if (existingMeal.length > 0) {
-    //   alert(`${mealType} 記錄已存在。`);
-
-    //   return;
-    // }
-
     const mealInfo = {
       whichMeal: mealType,
-      mealTime: date,
+      mealTime: (date || today(getLocalTimeZone())).toString(),
       foodContent: foodEntries.map((entry) => ({
         foodName: entry.name,
         weightInGram: parseFloat(entry.weight) || 0,
@@ -190,22 +147,6 @@ export default function FoodRecordPage() {
   };
 
   const handleSubmitResults = async () => {
-    // let records = await getSingleMealRecord({ date: date });
-
-    // if (records.message === "未找到該日期的用餐記錄") {
-    //   records = [];
-    // }
-
-    // const existingMeal = (records || []).filter(
-    //   (record: any) => record.whichMeal === mealType
-    // );
-
-    // if (existingMeal.length > 0) {
-    //   alert(`${mealType} 記錄已存在。`);
-
-    //   return;
-    // }
-
     // 驗證卡路里是否為有效正數且不能包含特殊字符
     const invalidCalories = foodEntries.some(
       (entry) =>
@@ -255,17 +196,8 @@ export default function FoodRecordPage() {
       return;
     }
 
-    // const now = new Date();
-    // const formattedMealTime = now
-    //   .toLocaleDateString("zh-TW", {
-    //     year: "numeric",
-    //     month: "2-digit",
-    //     day: "2-digit",
-    //   })
-    //   .replace(/\//g, "-");
-
     const mealData = {
-      mealTime: date,
+      mealTime: (date || today(getLocalTimeZone())).toString(),
       whichMeal: mealType,
       foodContent: foodEntries.map((entry) => ({
         foodName: entry.name,
@@ -303,7 +235,7 @@ export default function FoodRecordPage() {
         </h1>
 
         {/* 餐類型與時間顯示 */}
-        <div className="flex items-center gap-4 mb-8 bg-white p-5 rounded-xl shadow-sm">
+        <div className="grid grid-cols-6 gap-4 mb-8 bg-white p-5 rounded-xl shadow-sm">
           <select
             className="bg-white border-2 border-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium hover:border-gray-300 transition-colors"
             value={mealType}
@@ -314,12 +246,13 @@ export default function FoodRecordPage() {
             <option value="Dinner">晚餐</option>
             <option value="Other">其他</option>
           </select>
-          <span className="text-gray-600 text-lg font-medium">
-            {currentTime}
-          </span>
-          <span className="text-gray-600 text-lg font-medium ml-auto">
-            {currentDate}
-          </span>
+          <DatePicker
+            className="col-span-2"
+            maxValue={today(getLocalTimeZone())}
+            value={date}
+            variant="bordered"
+            onChange={setDate}
+          />
         </div>
 
         {/* 食物紀錄區域 */}

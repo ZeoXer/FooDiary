@@ -50,13 +50,13 @@ export default function SignupPage() {
 
       return;
     }
-  
+
     try {
       const response = await signup(userName, email, password);
-  
+
       if (response.message === "註冊成功") {
         const loginResponse = await login(email, password);
-  
+
         if (loginResponse.message === "登入成功") {
           setAuthToken(loginResponse.token);
           navigate("/info-form");
@@ -64,14 +64,13 @@ export default function SignupPage() {
           alert(loginResponse.message || "登入失敗，請稍後再試");
         }
       } else {
-        alert(response.message || "註冊失敗，請稍後再試");
+        alert("註冊失敗");
       }
     } catch (error) {
       console.error("Signup or Login error:", error);
-      alert("註冊或登入過程中出現錯誤，請稍後再試");
+      alert("註冊失敗");
     }
   };
-  
 
   return (
     <DefaultLayout>
