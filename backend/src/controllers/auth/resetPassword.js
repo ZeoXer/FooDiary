@@ -1,5 +1,6 @@
 const { User } = require('../../models/user');
 const { redisClient } = require("../../config/redis");
+const bcrypt = require('bcrypt');
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@#$%^&*!]{8,}$/;
 
@@ -28,7 +29,7 @@ const resetPassword = async (req, res) => {
 
     try {
         user = await User.findOne({ email });
-        user.password = newPassword;
+        user.password = await bcrypt.hash(newPassword, 10);
         await user.save();
         await redisClient.del(`PASSWORD:RESET:${token}`);
         return res.status(200).json({ message: '密碼重設成功' });
