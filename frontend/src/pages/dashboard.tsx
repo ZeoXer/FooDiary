@@ -269,7 +269,7 @@ export default function DashboardPage() {
               </svg>
             </button>
 
-            <h2 className="text-lg font-semibold">
+            <h2 className="md:text-lg font-semibold">
               {weekRange.startDate} - {weekRange.endDate}
             </h2>
 
@@ -354,23 +354,15 @@ export default function DashboardPage() {
               }}
             >
               <Button
+                color="primary"
+                size="lg"
+                variant="shadow"
                 onPress={() => {
-                  navigate(
-                    `/foodrecord?date=${new Date().toLocaleDateString("zh-TW")}`
-                  );
+                  navigate("/foodrecord");
                 }}
               >
-                新增今天的紀錄
+                新增紀錄
               </Button>
-              {/* <Button
-                onPress={() => {
-                  navigate(
-                    `/foodrecord?date=${weeklyData && weeklyData[selectedIdx].date}`
-                  );
-                }}
-              >
-                新增點選的當日紀錄
-              </Button> */}
             </div>
           </CardBody>
         </Card>

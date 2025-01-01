@@ -1,4 +1,4 @@
-const { User } = require('../../models/user');
+const { User } = require("../../models/user");
 const { redisClient } = require("../../config/redis");
 const bcrypt = require('bcrypt');
 
