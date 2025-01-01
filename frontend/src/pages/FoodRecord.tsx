@@ -231,11 +231,11 @@ export default function FoodRecordPage() {
     <DefaultLayout>
       <div className="p-6 max-w-4xl mx-auto bg-gray-50">
         <h1 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">
-          What did you eat?
+          今天吃了什麼呢？
         </h1>
 
         {/* 餐類型與時間顯示 */}
-        <div className="grid grid-cols-6 gap-4 mb-8 bg-white p-5 rounded-xl shadow-sm">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-8 bg-white p-5 rounded-xl shadow-sm">
           <select
             className="bg-white border-2 border-gray-200 text-gray-700 py-2 px-4 rounded-lg font-medium hover:border-gray-300 transition-colors"
             value={mealType}
