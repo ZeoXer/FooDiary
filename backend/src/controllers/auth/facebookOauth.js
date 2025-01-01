@@ -40,16 +40,16 @@ const facebookCallback = async (req, res) => {
         });
 
         const userInfo = userInfoResponse.data;
-        const { email, name } = userInfo;
+        const { email, name, id } = userInfo;
 
         // 檢查用戶是否存在
-        let user = await User.findOne({ email: userInfo.email }).select("-password");
+        let user = await User.findOne({ email: email }).select("-password");
         if (!user) {
-            user = await User.create({ email, name });
+            user = await User.create({ userName: name, email, password: id });
         }
 
-        const token = generateToken(user._id);
-        res.status(200).json({ message: '登入成功', token });
+        const token = generateToken();
+        res.status(200).json({ user, token });
 
     } catch (error) {
         res.status(500).send('Error with authenticating with Facebook');

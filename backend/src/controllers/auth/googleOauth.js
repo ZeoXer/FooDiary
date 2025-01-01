@@ -43,10 +43,10 @@ const googleCallback = async (req, res) => {
         const tokenInfoData = tokenInfoResponse.data;
 
         // 檢查用戶是否存在
-        const { email, name } = tokenInfoData;
+        const { email, name, sub: googleUserId } = tokenInfoData;
         let user = await User.findOne({ email }).select("-password");
         if (!user) {
-            user = await User.createUser({ email, name });
+            user = await User.createUser({ userName: name, email, password: googleUserId });
         }
 
         const token = generateToken();
