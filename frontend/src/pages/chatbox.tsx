@@ -225,7 +225,7 @@ export default function ChatboxPage() {
       if (userEmail) {
         fetchChatRecords(userEmail);
         console.log("Fetched user email:", userEmail);
-        const ws = new WebSocket("ws://localhost:8000");
+        const ws = new WebSocket("wss://www.foodiary.ching11720.site");
 
         wsRef.current = ws;
 
